@@ -439,6 +439,9 @@
           "nome": {
             "type": "string"
           },
+          "cpf": {
+            "type": "string"
+          },
           "dataCompra": {
             "type": "string",
             "format": "date-time"
@@ -455,6 +458,9 @@
           "id": {
             "type": "string",
             "format": "uuid"
+          },
+          "identificação": {
+            "type": "string"
           },
           "nome": {
             "type": "string"
@@ -475,6 +481,9 @@
           },
           "descricao": {
             "type": "string"
+          },
+          "disponibilidade": {
+            "type": "boolean"
           },
           "compras": {
             "type": [

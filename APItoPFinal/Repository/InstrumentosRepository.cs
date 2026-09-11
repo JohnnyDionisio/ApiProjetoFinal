@@ -20,6 +20,10 @@ namespace APItoPFinal.Repository
         {
             return _context.Instrumentos.FirstOrDefault(i => i.Id == id);
         }
+        public Instrumento? GetInstrumentoByIdentity(string identificacao)
+        {
+            return _context.Instrumentos.FirstOrDefault(i => i.Identificação == identificacao);
+        }
         public void AdicionarInstrumento(Instrumento instrumento)
         {
             _context.Instrumentos.Add(instrumento);
@@ -32,7 +36,7 @@ namespace APItoPFinal.Repository
         }
         public void DeletarInstrumento(Guid id)
         {
-            var instrumento = _context.Instrumentos.Find(i => i.Id == id);
+            var instrumento = _context.Instrumentos.FirstOrDefault(i => i.Id == id);
             if (instrumento != null)
             {
                 _context.Instrumentos.Remove(instrumento);

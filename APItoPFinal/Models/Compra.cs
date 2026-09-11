@@ -8,6 +8,8 @@ namespace APItoPFinal.Models
 
         public string Nome { get; set; }
 
+        public string CPF { get; set; }
+
         public DateTime DataCompra { get; set; } = DateTime.Now;
 
         //Relaçao com o Usuario

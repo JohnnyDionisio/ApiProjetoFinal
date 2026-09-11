@@ -1,59 +1,90 @@
 ﻿using APItoPFinal.Data;
 using APItoPFinal.Models;
+using APItoPFinal.Repository;
 using Microsoft.EntityFrameworkCore;
 
 namespace APItoPFinal.Service
 {
-    public class CompraService(AppDbContext context)
+    public class CompraService
     {
-        public async Task<IEnumerable<Compra>> GetCompras()
+        private readonly CompraRepository _repository;
+        private readonly InstrumentosRepository _IRepository;
+        
+        public CompraService(CompraRepository repository, InstrumentosRepository IRepository)
         {
-            return await context.Compras.ToListAsync();
+            _repository = repository;
+            _IRepository = IRepository;
         }
-        public async Task<Compra> GetComprasById(Guid id)
-        {
-            return await context.Compras.FirstOrDefaultAsync(c => c.Id == id);
-        }
-        public async Task<Compra> PostCompras(Compra compra)
-        {
-            context.Compras.Add(compra);
-            await context.SaveChangesAsync();
 
-            return compra;
-        }
-        public async Task<Compra> PutCompras(Guid id, Compra compra)
+        public List<Compra> GetCompras()
         {
-            context.Entry(compra).State = EntityState.Modified;
-            try
-            {
-                await context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                var compraTemp = context.Compras.Any(c => c.Id == id);
-                if (!compraTemp)
-                {
-                    return null;
-                }
-                else
-                {
-                    throw;
-                }
-            }
-                return compra;
+            return _repository.PuxarCompras().Result.ToList();
         }
-        public async Task<Compra> DeleteCompras(Guid id)
+        public Compra? GetComprasById(Guid id)
         {
-            var compra = await context.Compras.FindAsync(id);
+            return _repository.PuxarCompras().Result.FirstOrDefault(c => c.Id == id);
+        }
+        public void AdicionarCompra(Compra compra)
+        {
+            var instrumento = _IRepository.GetInstrumentosById(compra.InstrumentoId);
+            if(instrumento == null)
+            {
+                throw new Exception("Instrumento não encontrado.");
+            }
+            if (!instrumento.Disponibilidade)
+            {
+                throw new Exception("Este instrumento já foi comprado.");
+            }
+            
+            instrumento.Disponibilidade = false;
+            
+            _IRepository.AtualizarInstrumento(instrumento.Id, instrumento);
+
+            _repository.PostCompras(compra);
+        }
+
+        public void AtualizarCompra(Compra compra)
+        {
+            var compraExiste = _repository.PuxarCompras().Result.FirstOrDefault(c => c.Id == compra.Id);
+            if (compraExiste == null)
+            {
+                throw new Exception("Compra não encontrada.");
+            }
+            var instrumento = _IRepository.GetInstrumentosById(compra.InstrumentoId);
+            if (instrumento != null)
+            {
+                if (instrumento.Disponibilidade == false && instrumento.Id != compraExiste.InstrumentoId)
+                {
+                    throw new Exception("Instrumento indisponível para compra.");
+                }
+            }
+            else
+            {
+                throw new Exception("Instrumento não encontrado.");
+            }
+
+            compraExiste.Nome = compra.Nome;
+            compraExiste.CPF = compra.CPF;
+
+            _repository.PutCompras(compra.Id, compra);
+        }
+
+        public void DeletarCompra(Guid id)
+        {
+            var compra = _repository.PuxarCompras().Result.FirstOrDefault(c => c.Id == id);
             if (compra == null)
             {
-                return null;
+                throw new Exception("Compra não encontrada.");
+            }
+            var instrumento = _IRepository.GetInstrumentosById(compra.InstrumentoId);
+            if (instrumento != null)
+            {
+                instrumento.Disponibilidade = true;
+                _IRepository.AtualizarInstrumento(instrumento.Id, instrumento);
             }
 
-            context.Compras.Remove(compra);
-            await context.SaveChangesAsync();
-
-            return compra;
+            _repository.DeleteCompras(id);
         }
+
     }
 }

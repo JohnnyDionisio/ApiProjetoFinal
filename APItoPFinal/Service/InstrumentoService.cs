@@ -1,60 +1,81 @@
 ﻿using APItoPFinal.Data;
 using APItoPFinal.Models;
+using APItoPFinal.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace APItoPFinal.Service
 {
-    public class InstrumentoService(AppDbContext context) 
+    public class InstrumentoService
     {
-        public async Task<IEnumerable<Instrumento>> GetInstrumentos()
-        {
-            return await context.Instrumentos.Include(i => i.Compras).ToListAsync();
-        }
-        public async Task<Instrumento> GetInstrumentosById(Guid id)
-        {
-            return await context.Instrumentos.FirstOrDefaultAsync(i => i.Id == id);
-        }
-        public async Task<Instrumento> PostInstrumentos(Instrumento instrumento)
-        {
-            context.Instrumentos.Add(instrumento);
-            await context.SaveChangesAsync();
+        private readonly InstrumentosRepository _repository;
 
-            return instrumento;
-        }
-        public async Task<Instrumento> PutInstrumentos(Guid id, Instrumento instrumento)
+        public InstrumentoService(InstrumentosRepository repository)
         {
-            context.Entry(instrumento).State = EntityState.Modified;
-            try
-            {
-                await context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                var instrumentoTemp = context.Instrumentos.Any(i => i.Id == id);
-                if (!instrumentoTemp)
+            _repository = repository;
+        }
+
+        public List<Instrumento> GetInstrumentos()
+        {
+            return _repository.GetInstrumentos();
+        }
+
+        public Instrumento? GetInstrumentosById(Guid id)
+        {
+            return _repository.GetInstrumentosById(id);
+        }
+
+        public void AdicionarInstrumento(Instrumento instrumento)
+        {
+            var instrumentoExiste = _repository.GetInstrumentosById(instrumento.Id);
+            if(instrumentoExiste != null)
                 {
-                    return null;
+                    throw new Exception("Instrumento já existe.");
                 }
-                else
-                {
-                    throw;
-                }
-            }
-            return instrumento;
-        }
-        public async Task<Instrumento> DeleteInstrumentos(Guid id)
-        {
-            var instrumento = await context.Instrumentos.FindAsync(id);
-            if (instrumento == null)
+            var identificacao = _repository.GetInstrumentoByIdentity(instrumento.Identificação);
+            if(identificacao != null)
             {
-                return null;
+                throw new Exception("Instrumento já cadastrado com essa identificação.");
             }
 
-            context.Instrumentos.Remove(instrumento);
-            await context.SaveChangesAsync();
+            instrumento.Id = Guid.NewGuid();
+            instrumento.Disponibilidade = true;
 
-            return instrumento;
+            _repository.AdicionarInstrumento(instrumento);
         }
+        public void AtualizarInstrumento(Instrumento instrumento)
+        {
+            var instrumentoExiste = _repository.GetInstrumentosById(instrumento.Id);
+            if (instrumentoExiste == null)
+            {
+                throw new Exception("Instrumento não encontrado.");
+            }
+            var identity = _repository.GetInstrumentoByIdentity(instrumento.Identificação);
+            if(identity != null && identity.Id != instrumento.Id)
+            {
+                throw new Exception("Instrumento já cadastrado com essa identificação.");
+            }
+
+            instrumentoExiste.Identificação = instrumento.Identificação;
+            instrumentoExiste.Nome = instrumento.Nome;
+            instrumentoExiste.Preco = instrumento.Preco;
+            instrumentoExiste.Tipo = instrumento.Tipo;
+            instrumentoExiste.Marca = instrumento.Marca;
+            instrumentoExiste.Descricao = instrumento.Descricao;
+            instrumentoExiste.Disponibilidade = instrumento.Disponibilidade;
+
+            _repository.AtualizarInstrumento(instrumento.Id, instrumentoExiste);
+        }
+
+        public void DeletarInstrumento(Guid id)
+        {
+            var instrumentoExiste = _repository.GetInstrumentosById(id);
+            if (instrumentoExiste == null)
+            {
+                throw new Exception("Instrumento não encontrado.");
+            }
+            _repository.DeletarInstrumento(id);
+        }
+
     }
 }

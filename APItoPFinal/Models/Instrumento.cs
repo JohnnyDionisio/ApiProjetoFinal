@@ -7,6 +7,8 @@ namespace APItoPFinal.Models
 
         public Guid Id { get; set; }
 
+        public string Identificação { get; set; }
+
         public string Nome { get; set; }
 
         public double Preco { get; set; }
@@ -17,6 +19,7 @@ namespace APItoPFinal.Models
 
         public string Descricao { get; set; }
 
+        public bool Disponibilidade { get; set; } = true;
 
         public ICollection<Compra>? Compras { get; set; } = new List<Compra>();
     }
