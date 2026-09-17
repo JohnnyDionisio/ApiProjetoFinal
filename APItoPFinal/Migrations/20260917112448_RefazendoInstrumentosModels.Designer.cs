@@ -4,6 +4,7 @@ using APItoPFinal.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace APItoPFinal.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260917112448_RefazendoInstrumentosModels")]
+    partial class RefazendoInstrumentosModels
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,7 +37,7 @@ namespace APItoPFinal.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categorias");
+                    b.ToTable("Categoria");
                 });
 
             modelBuilder.Entity("APItoPFinal.Models.Compra", b =>
@@ -75,8 +78,7 @@ namespace APItoPFinal.Migrations
 
                     b.Property<string>("Descricao")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("Disponibilidade")
                         .HasColumnType("bit");
@@ -96,8 +98,7 @@ namespace APItoPFinal.Migrations
 
                     b.Property<string>("Nome")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<double>("Preco")
                         .HasColumnType("float");
@@ -123,7 +124,7 @@ namespace APItoPFinal.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Marcas");
+                    b.ToTable("Marca");
                 });
 
             modelBuilder.Entity("APItoPFinal.Models.Compra", b =>

@@ -1,8 +1,6 @@
-﻿using APItoPFinal.Data;
-using APItoPFinal.Models;
-using Microsoft.AspNetCore.Http;
+﻿using APItoPFinal.Models;
+using APItoPFinal.Service;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace APItoPFinal.Controllers
 {
@@ -10,105 +8,80 @@ namespace APItoPFinal.Controllers
     [ApiController]
     public class ComprasController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly CompraService _service;
 
-        public ComprasController(AppDbContext context)
+        public ComprasController(CompraService service)
         {
-            _context = context;
+            _service = service;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Compra>>> GetCompras()
+        public ActionResult<IEnumerable<Compra>> GetCompras()
         {
-            return await _context.Compras.ToListAsync();
+            return Ok(_service.GetCompras());
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Compra>> GetComprasById(Guid id)
+        public ActionResult<Compra> GetComprasById(Guid id)
         {
-            var compra = await _context.Compras.FindAsync(id);
+            var compra = _service.GetComprasById(id);
 
             if (compra == null)
             {
-                return NotFound();
+                return NotFound("Compra não encontrada.");
             }
 
-            return compra;
+            return Ok(compra);
         }
 
         [HttpPost]
-        public async Task<ActionResult<Compra>> PostCompras(Compra compra)
+        public ActionResult<Compra> PostCompras(Compra compra)
         {
-            // 1. Busca o instrumento pelo ID informado na compra
-            var instrumento = await _context.Instrumentos.FindAsync(compra.InstrumentoId);
-
-            // 2. Valida se o instrumento existe
-            if (instrumento == null)
+            try
             {
-                return NotFound("Instrumento não encontrado.");
-            }
+                compra.Id = Guid.NewGuid();
+                _service.AdicionarCompra(compra);
 
-            // 3. Valida se o instrumento já foi comprado (Disponibilidade == false)
-            if (!instrumento.Disponibilidade)
+                return CreatedAtAction(nameof(GetComprasById), new { id = compra.Id }, compra);
+            }
+            catch (Exception ex)
             {
-                return BadRequest("Este instrumento já foi comprado e não está disponível.");
+                // Pega a mensagem lançada no CompraService ("Instrumento não encontrado" ou "já foi comprado")
+                return BadRequest(ex.Message);
             }
-
-            // 4. Marca o instrumento como indisponível
-            instrumento.Disponibilidade = false;
-
-            // 5. Gera o ID da compra e adiciona a nova compra
-            compra.Id = Guid.NewGuid();
-            _context.Compras.Add(compra);
-
-            // 6. Salva AMBAS as alterações (novo status do instrumento + nova compra) no banco
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetComprasById", new { id = compra.Id }, compra);
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> PutCompras(Guid id, Compra compra)
+        public ActionResult PutCompras(Guid id, Compra compra)
         {
             if (id != compra.Id)
             {
-                return BadRequest();
+                return BadRequest("O ID informado não confere com o objeto enviado.");
             }
-
-            _context.Entry(compra).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                _service.AtualizarCompra(compra);
+                return NoContent();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception ex)
             {
-                var compraTemp = _context.Compras.Any(e => e.Id == id);
-                if (!compraTemp)
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return BadRequest(ex.Message);
             }
-            return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteCompras(Guid id)
+        public ActionResult DeleteCompras(Guid id)
         {
-            var compra = await _context.Compras.FindAsync(id);
-            if (compra == null)
+            try
             {
-                return NotFound();
+                _service.DeletarCompra(id);
+                return NoContent();
             }
-
-            _context.Compras.Remove(compra);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
     }
 }

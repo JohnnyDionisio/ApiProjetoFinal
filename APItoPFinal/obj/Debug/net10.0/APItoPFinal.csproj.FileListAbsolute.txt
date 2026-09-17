@@ -157,7 +157,6 @@ C:\Users\53362182860\Desktop\Programações\C#\APItoPFinal\APItoPFinal\obj\Debug
 C:\Users\53362182860\Desktop\Programações\C#\APItoPFinal\APItoPFinal\obj\Debug\net10.0\staticwebassets.development.json
 C:\Users\53362182860\Desktop\Programações\C#\APItoPFinal\APItoPFinal\obj\Debug\net10.0\staticwebassets.build.endpoints.json
 C:\Users\53362182860\Desktop\Programações\C#\APItoPFinal\APItoPFinal\obj\Debug\net10.0\swae.build.ex.cache
-C:\Users\53362182860\Desktop\Programações\C#\APItoPFinal\APItoPFinal\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt
 C:\Users\53362182860\Desktop\Programações\C#\APItoPFinal\APItoPFinal\obj\Debug\net10.0\APItoPFi.6FB42649.Up2Date
 C:\Users\53362182860\Desktop\Programações\C#\APItoPFinal\APItoPFinal\obj\Debug\net10.0\APItoPFinal.dll
 C:\Users\53362182860\Desktop\Programações\C#\APItoPFinal\APItoPFinal\obj\Debug\net10.0\refint\APItoPFinal.dll
@@ -165,3 +164,4 @@ C:\Users\53362182860\Desktop\Programações\C#\APItoPFinal\APItoPFinal\obj\Debug
 C:\Users\53362182860\Desktop\Programações\C#\APItoPFinal\APItoPFinal\obj\Debug\net10.0\APItoPFinal.genruntimeconfig.cache
 C:\Users\53362182860\Desktop\Programações\C#\APItoPFinal\APItoPFinal\obj\Debug\net10.0\ref\APItoPFinal.dll
 C:\Users\53362182860\Desktop\Programações\C#\APItoPFinal\APItoPFinal\obj\Debug\net10.0\APItoPFinal.sourcelink.json
+C:\Users\53362182860\Desktop\Programações\C#\APItoPFinal\APItoPFinal\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt

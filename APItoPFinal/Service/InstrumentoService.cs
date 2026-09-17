@@ -43,7 +43,7 @@ namespace APItoPFinal.Service
 
             _repository.AdicionarInstrumento(instrumento);
         }
-        public void AtualizarInstrumento(Instrumento instrumento)
+        public async Task AtualizarInstrumento(Instrumento instrumento)
         {
             var instrumentoExiste = _repository.GetInstrumentosById(instrumento.Id);
             if (instrumentoExiste == null)
@@ -59,8 +59,6 @@ namespace APItoPFinal.Service
             instrumentoExiste.Identificação = instrumento.Identificação;
             instrumentoExiste.Nome = instrumento.Nome;
             instrumentoExiste.Preco = instrumento.Preco;
-            instrumentoExiste.Tipo = instrumento.Tipo;
-            instrumentoExiste.Marca = instrumento.Marca;
             instrumentoExiste.Descricao = instrumento.Descricao;
             instrumentoExiste.Disponibilidade = instrumento.Disponibilidade;
 

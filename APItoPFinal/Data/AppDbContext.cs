@@ -9,6 +9,11 @@ namespace APItoPFinal.Data
         }
 
         public DbSet<Instrumento> Instrumentos { get; set; }
+
+        public DbSet<Categoria> Categorias { get; set; }
+
+        public DbSet<Marca> Marcas { get; set; }
+
         public DbSet<Compra> Compras { get; set; }
     }
 }
