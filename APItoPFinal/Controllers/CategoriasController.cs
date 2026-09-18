@@ -1,5 +1,6 @@
 ﻿using APItoPFinal.Models;
 using APItoPFinal.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,6 +8,7 @@ namespace APItoPFinal.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class CategoriasController : ControllerBase
     {
         private readonly CategoriaService _service;

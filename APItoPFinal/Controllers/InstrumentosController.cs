@@ -5,11 +5,14 @@ using APItoPFinal.Data;
 using APItoPFinal.DTOs;
 using APItoPFinal.Models;
 using APItoPFinal.Service;
+using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
 
 namespace APItoPFinal.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class InstrumentosController : ControllerBase
     {
         private readonly InstrumentoService _service;

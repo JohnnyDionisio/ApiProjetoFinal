@@ -1,11 +1,13 @@
 ﻿using APItoPFinal.Models;
 using APItoPFinal.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace APItoPFinal.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ComprasController : ControllerBase
     {
         private readonly CompraService _service;

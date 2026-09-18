@@ -1,5 +1,6 @@
 ﻿using APItoPFinal.Models;
 using APItoPFinal.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Client;
@@ -8,6 +9,7 @@ namespace APItoPFinal.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class MarcasController : ControllerBase
     {
         private readonly MarcaService _service;
