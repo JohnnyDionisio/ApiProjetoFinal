@@ -9,25 +9,29 @@ namespace APItoPFinal.Service
     {
         private readonly CompraRepository _repository;
         private readonly InstrumentosRepository _IRepository;
-        
+
         public CompraService(CompraRepository repository, InstrumentosRepository IRepository)
         {
             _repository = repository;
             _IRepository = IRepository;
         }
 
-        public List<Compra> GetCompras()
+        public async Task<List<Compra>> GetCompras()
         {
-            return _repository.PuxarCompras().Result.ToList();
+            var compras = await _repository.PuxarCompras();
+            return compras.ToList();
         }
-        public Compra? GetComprasById(Guid id)
+
+        public async Task<Compra?> GetComprasById(Guid id)
         {
-            return _repository.PuxarCompras().Result.FirstOrDefault(c => c.Id == id);
+            var compras = await _repository.PuxarCompras();
+            return compras.FirstOrDefault(c => c.Id == id);
         }
-        public void AdicionarCompra(Compra compra)
+
+        public async Task AdicionarCompra(Compra compra)
         {
-            var instrumento = _IRepository.GetInstrumentosById(compra.InstrumentoId);
-            if(instrumento == null)
+            var instrumento = await _IRepository.GetByIdAsync(compra.InstrumentoId);
+            if (instrumento == null)
             {
                 throw new Exception("Instrumento não encontrado.");
             }
@@ -35,22 +39,23 @@ namespace APItoPFinal.Service
             {
                 throw new Exception("Este instrumento já foi comprado.");
             }
-            
+
             instrumento.Disponibilidade = false;
-            
+
             _IRepository.AtualizarInstrumento(instrumento.Id, instrumento);
 
             _repository.PostCompras(compra);
         }
 
-        public void AtualizarCompra(Compra compra)
+        public async Task AtualizarCompra(Compra compra)
         {
-            var compraExiste = _repository.PuxarCompras().Result.FirstOrDefault(c => c.Id == compra.Id);
+            var compras = await _repository.PuxarCompras();
+            var compraExiste = compras.FirstOrDefault(c => c.Id == compra.Id);
             if (compraExiste == null)
             {
                 throw new Exception("Compra não encontrada.");
             }
-            var instrumento = _IRepository.GetInstrumentosById(compra.InstrumentoId);
+            var instrumento = await _IRepository.GetByIdAsync(compra.InstrumentoId);
             if (instrumento != null)
             {
                 if (instrumento.Disponibilidade == false && instrumento.Id != compraExiste.InstrumentoId)
@@ -69,14 +74,15 @@ namespace APItoPFinal.Service
             _repository.PutCompras(compra.Id, compra);
         }
 
-        public void DeletarCompra(Guid id)
+        public async Task DeletarCompra(Guid id)
         {
-            var compra = _repository.PuxarCompras().Result.FirstOrDefault(c => c.Id == id);
+            var compras = await _repository.PuxarCompras();
+            var compra = compras.FirstOrDefault(c => c.Id == id);
             if (compra == null)
             {
                 throw new Exception("Compra não encontrada.");
             }
-            var instrumento = _IRepository.GetInstrumentosById(compra.InstrumentoId);
+            var instrumento = await _IRepository.GetByIdAsync(compra.InstrumentoId);
             if (instrumento != null)
             {
                 instrumento.Disponibilidade = true;

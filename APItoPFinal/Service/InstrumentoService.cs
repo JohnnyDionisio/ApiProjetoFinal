@@ -1,4 +1,5 @@
 ﻿using APItoPFinal.Data;
+using APItoPFinal.DTOs;
 using APItoPFinal.Models;
 using APItoPFinal.Repository;
 using Microsoft.AspNetCore.Mvc;
@@ -15,25 +16,32 @@ namespace APItoPFinal.Service
             _repository = repository;
         }
 
-        public List<Instrumento> GetInstrumentos()
+        public async Task<List<InstrumentoDTO>> GetInstrumentos()
         {
-            return _repository.GetInstrumentos();
+            return await _repository.GetAllAsync();
         }
 
-        public Instrumento? GetInstrumentosById(Guid id)
+        // Para o Controller (GET por id) - devolve DTO
+        public async Task<InstrumentoDTO?> GetInstrumentoDTOById(Guid id)
         {
-            return _repository.GetInstrumentosById(id);
+            return await _repository.GetByIdDTOAsync(id);
         }
 
-        public void AdicionarInstrumento(Instrumento instrumento)
+        // Uso interno (validações) - devolve entidade completa
+        public async Task<Instrumento?> GetInstrumentosById(Guid id)
         {
-            var instrumentoExiste = _repository.GetInstrumentosById(instrumento.Id);
-            if(instrumentoExiste != null)
-                {
-                    throw new Exception("Instrumento já existe.");
-                }
+            return await _repository.GetByIdAsync(id);
+        }
+
+        public async Task AdicionarInstrumento(Instrumento instrumento)
+        {
+            var instrumentoExiste = await _repository.GetByIdAsync(instrumento.Id);
+            if (instrumentoExiste != null)
+            {
+                throw new Exception("Instrumento já existe.");
+            }
             var identificacao = _repository.GetInstrumentoByIdentity(instrumento.Identificação);
-            if(identificacao != null)
+            if (identificacao != null)
             {
                 throw new Exception("Instrumento já cadastrado com essa identificação.");
             }
@@ -43,15 +51,16 @@ namespace APItoPFinal.Service
 
             _repository.AdicionarInstrumento(instrumento);
         }
+
         public async Task AtualizarInstrumento(Instrumento instrumento)
         {
-            var instrumentoExiste = _repository.GetInstrumentosById(instrumento.Id);
+            var instrumentoExiste = await _repository.GetByIdAsync(instrumento.Id);
             if (instrumentoExiste == null)
             {
                 throw new Exception("Instrumento não encontrado.");
             }
             var identity = _repository.GetInstrumentoByIdentity(instrumento.Identificação);
-            if(identity != null && identity.Id != instrumento.Id)
+            if (identity != null && identity.Id != instrumento.Id)
             {
                 throw new Exception("Instrumento já cadastrado com essa identificação.");
             }
@@ -65,15 +74,14 @@ namespace APItoPFinal.Service
             _repository.AtualizarInstrumento(instrumento.Id, instrumentoExiste);
         }
 
-        public void DeletarInstrumento(Guid id)
+        public async Task DeletarInstrumento(Guid id)
         {
-            var instrumentoExiste = _repository.GetInstrumentosById(id);
+            var instrumentoExiste = await _repository.GetByIdAsync(id);
             if (instrumentoExiste == null)
             {
                 throw new Exception("Instrumento não encontrado.");
             }
             _repository.DeletarInstrumento(id);
         }
-
     }
 }

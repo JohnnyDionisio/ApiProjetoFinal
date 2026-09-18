@@ -17,6 +17,10 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(buil
 builder.Services.AddScoped<InstrumentosRepository>();
 builder.Services.AddScoped<InstrumentoService>();
 
+// Registra o Repository e a Service dos Compras
+builder.Services.AddScoped<CompraRepository>();
+builder.Services.AddScoped<CompraService>();
+
 // Registre o Repository e a Service de Categorias
 builder.Services.AddScoped<CategoriasRepository>();
 builder.Services.AddScoped<CategoriaService>();

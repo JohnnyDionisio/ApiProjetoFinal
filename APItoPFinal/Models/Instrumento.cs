@@ -1,10 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace APItoPFinal.Models
 {
     public class Instrumento
     {
-
         public Guid Id { get; set; }
 
         [Required(ErrorMessage = "O campo Identificação é obrigatório.")]
@@ -12,7 +12,7 @@ namespace APItoPFinal.Models
 
         [Required(ErrorMessage = "O campo Nome é obrigatório.")]
         [StringLength(50, ErrorMessage = "O campo Nome deve ter no máximo 50 caracteres.")]
-        public string Nome { get; set; } 
+        public string Nome { get; set; }
 
         [Required(ErrorMessage = "O campo Preço é obrigatório.")]
         public double Preco { get; set; }
@@ -24,9 +24,11 @@ namespace APItoPFinal.Models
         public bool Disponibilidade { get; set; } = true;
 
         public Guid IdCategoria { get; set; }
+        [ForeignKey("IdCategoria")]
         public Categoria? Categoria { get; set; }
 
         public Guid IdMarca { get; set; }
+        [ForeignKey("IdMarca")]
         public Marca? Marca { get; set; }
 
         public ICollection<Compra>? Compras { get; set; } = new List<Compra>();

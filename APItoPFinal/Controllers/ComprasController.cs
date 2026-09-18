@@ -16,15 +16,15 @@ namespace APItoPFinal.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Compra>> GetCompras()
+        public async Task<ActionResult<IEnumerable<Compra>>> GetCompras()
         {
-            return Ok(_service.GetCompras());
+            return Ok(await _service.GetCompras());
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Compra> GetComprasById(Guid id)
+        public async Task<ActionResult<Compra>> GetComprasById(Guid id)
         {
-            var compra = _service.GetComprasById(id);
+            var compra = await _service.GetComprasById(id);
 
             if (compra == null)
             {
@@ -35,24 +35,23 @@ namespace APItoPFinal.Controllers
         }
 
         [HttpPost]
-        public ActionResult<Compra> PostCompras(Compra compra)
+        public async Task<ActionResult<Compra>> PostCompras(Compra compra)
         {
             try
             {
                 compra.Id = Guid.NewGuid();
-                _service.AdicionarCompra(compra);
+                await _service.AdicionarCompra(compra);
 
                 return CreatedAtAction(nameof(GetComprasById), new { id = compra.Id }, compra);
             }
             catch (Exception ex)
             {
-                // Pega a mensagem lançada no CompraService ("Instrumento não encontrado" ou "já foi comprado")
                 return BadRequest(ex.Message);
             }
         }
 
         [HttpPut("{id}")]
-        public ActionResult PutCompras(Guid id, Compra compra)
+        public async Task<ActionResult> PutCompras(Guid id, Compra compra)
         {
             if (id != compra.Id)
             {
@@ -61,7 +60,7 @@ namespace APItoPFinal.Controllers
 
             try
             {
-                _service.AtualizarCompra(compra);
+                await _service.AtualizarCompra(compra);
                 return NoContent();
             }
             catch (Exception ex)
@@ -71,11 +70,11 @@ namespace APItoPFinal.Controllers
         }
 
         [HttpDelete("{id}")]
-        public ActionResult DeleteCompras(Guid id)
+        public async Task<ActionResult> DeleteCompras(Guid id)
         {
             try
             {
-                _service.DeletarCompra(id);
+                await _service.DeletarCompra(id);
                 return NoContent();
             }
             catch (Exception ex)

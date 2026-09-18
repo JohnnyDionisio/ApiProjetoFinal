@@ -227,7 +227,7 @@
     "Parameters": [],
     "ReturnTypes": [
       {
-        "Type": "System.Collections.Generic.IEnumerable\u00601[[APItoPFinal.Models.Instrumento, APItoPFinal, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[APItoPFinal.DTOs.InstrumentoDTO, APItoPFinal, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -279,7 +279,7 @@
     ],
     "ReturnTypes": [
       {
-        "Type": "APItoPFinal.Models.Instrumento",
+        "Type": "APItoPFinal.DTOs.InstrumentoDTO",
         "MediaTypes": [
           "text/plain",
           "application/json",

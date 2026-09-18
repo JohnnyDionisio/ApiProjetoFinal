@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using APItoPFinal.Data;
+using APItoPFinal.DTOs;
 using APItoPFinal.Models;
 using APItoPFinal.Service;
 
@@ -19,15 +20,15 @@ namespace APItoPFinal.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Instrumento>>> GetInstrumentos()
+        public async Task<ActionResult<IEnumerable<InstrumentoDTO>>> GetInstrumentos()
         {
-            return _service.GetInstrumentos();
+            return await _service.GetInstrumentos();
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Instrumento>> GetInstrumentosById(Guid id)
+        public async Task<ActionResult<InstrumentoDTO>> GetInstrumentosById(Guid id)
         {
-            var instrumento =  _service.GetInstrumentosById(id);
+            var instrumento = await _service.GetInstrumentoDTOById(id);
 
             if (instrumento == null)
             {
@@ -36,11 +37,12 @@ namespace APItoPFinal.Controllers
 
             return instrumento;
         }
+
         [HttpPost]
         public async Task<ActionResult<Instrumento>> PostInstrumento(Instrumento instrumento)
         {
             instrumento.Id = Guid.NewGuid();
-            _service.AdicionarInstrumento(instrumento);
+            await _service.AdicionarInstrumento(instrumento);
             return CreatedAtAction("GetInstrumentosById", new { id = instrumento.Id }, instrumento);
         }
 
@@ -54,12 +56,10 @@ namespace APItoPFinal.Controllers
 
             try
             {
-                // 1. O await executa a atualização e o salvamento interno no Service
                 await _service.AtualizarInstrumento(instrumento);
             }
             catch (KeyNotFoundException)
             {
-                // Caso o instrumento não exista no banco
                 return NotFound();
             }
             catch (DbUpdateConcurrencyException)
@@ -69,16 +69,17 @@ namespace APItoPFinal.Controllers
 
             return NoContent();
         }
+
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteInstrumento(Guid id)
         {
-            var instrumento = _service.GetInstrumentosById(id);
+            var instrumento = await _service.GetInstrumentosById(id);
             if (instrumento == null)
             {
                 return NotFound();
             }
 
-            _service.DeletarInstrumento(id);
+            await _service.DeletarInstrumento(id);
             return NoContent();
         }
     }

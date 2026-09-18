@@ -400,7 +400,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Instrumento"
+                    "$ref": "#/components/schemas/InstrumentoDTO"
                   }
                 }
               },
@@ -408,7 +408,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Instrumento"
+                    "$ref": "#/components/schemas/InstrumentoDTO"
                   }
                 }
               },
@@ -416,7 +416,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Instrumento"
+                    "$ref": "#/components/schemas/InstrumentoDTO"
                   }
                 }
               }
@@ -494,17 +494,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/Instrumento"
+                  "$ref": "#/components/schemas/InstrumentoDTO"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Instrumento"
+                  "$ref": "#/components/schemas/InstrumentoDTO"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Instrumento"
+                  "$ref": "#/components/schemas/InstrumentoDTO"
                 }
               }
             }
@@ -755,6 +755,9 @@
   "components": {
     "schemas": {
       "Categoria": {
+        "required": [
+          "nome"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -762,6 +765,8 @@
             "format": "uuid"
           },
           "nome": {
+            "maxLength": 15,
+            "minLength": 0,
             "type": "string"
           },
           "instrumentos": {
@@ -776,6 +781,10 @@
         }
       },
       "Compra": {
+        "required": [
+          "nome",
+          "cpf"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -783,9 +792,13 @@
             "format": "uuid"
           },
           "nome": {
+            "maxLength": 100,
+            "minLength": 0,
             "type": "string"
           },
           "cpf": {
+            "maxLength": 11,
+            "minLength": 0,
             "type": "string"
           },
           "dataCompra": {
@@ -874,7 +887,45 @@
           }
         }
       },
+      "InstrumentoDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "identificação": {
+            "type": "string"
+          },
+          "nome": {
+            "type": "string"
+          },
+          "preco": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "descricao": {
+            "type": "string"
+          },
+          "disponibilidade": {
+            "type": "boolean"
+          },
+          "categoria": {
+            "type": "string"
+          },
+          "marca": {
+            "type": "string"
+          }
+        }
+      },
       "Marca": {
+        "required": [
+          "nome"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -882,6 +933,8 @@
             "format": "uuid"
           },
           "nome": {
+            "maxLength": 25,
+            "minLength": 0,
             "type": "string"
           },
           "instrumentos": {
