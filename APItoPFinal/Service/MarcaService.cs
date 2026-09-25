@@ -1,4 +1,5 @@
-﻿using APItoPFinal.Models;
+﻿using APItoPFinal.DTOs;
+using APItoPFinal.Models;
 using APItoPFinal.Repository;
 
 namespace APItoPFinal.Service
@@ -20,6 +21,13 @@ namespace APItoPFinal.Service
         {
             return _repository.GetMarcaById(id);
         }
+
+        // NOVO
+        public async Task<MarcaDTO?> GetMarcaDTOById(Guid id)
+        {
+            return await _repository.GetMarcaDTOByIdAsync(id);
+        }
+
         public void AdicionarMarca(Marca marca)
         {
             var marcaExiste = _repository.GetMarcaById(marca.Id);
@@ -34,7 +42,7 @@ namespace APItoPFinal.Service
         public void AtualizarMarca(Marca marca)
         {
             var marcaExiste = _repository.GetMarcaById(marca.Id);
-            if(marcaExiste == null)
+            if (marcaExiste == null)
             {
                 throw new Exception("Marca não encontrada.");
             }
@@ -44,7 +52,7 @@ namespace APItoPFinal.Service
         public void DeletarMarca(Guid id)
         {
             var marcaExiste = _repository.GetMarcaById(id);
-            if(marcaExiste == null)
+            if (marcaExiste == null)
             {
                 throw new Exception("Marca não encontrada.");
             }

@@ -1,4 +1,5 @@
-﻿using APItoPFinal.Models;
+﻿using APItoPFinal.DTOs;
+using APItoPFinal.Models;
 using APItoPFinal.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -25,9 +26,9 @@ namespace APItoPFinal.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Categoria> GetCategoriaById(Guid id)
+        public async Task<ActionResult<CategoriaDTO>> GetCategoriaById(Guid id)
         {
-            var categoria = _service.GetCategoriaById(id);
+            var categoria = await _service.GetCategoriaDTOById(id);
             if (categoria == null)
             {
                 return NotFound();

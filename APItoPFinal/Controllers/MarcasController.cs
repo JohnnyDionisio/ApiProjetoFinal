@@ -1,4 +1,5 @@
-﻿using APItoPFinal.Models;
+﻿using APItoPFinal.DTOs;
+using APItoPFinal.Models;
 using APItoPFinal.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -25,12 +26,12 @@ namespace APItoPFinal.Controllers
             return Ok(_service.GetMarcas());
         }
         [HttpGet("{id}")]
-        public ActionResult<Marca> GetMarcaById(Guid id)
+        public async Task<ActionResult<MarcaDTO>> GetMarcaById(Guid id)
         {
-            var marca = _service.GetMarcaById(id);
-            if(marca == null)
+            var marca = await _service.GetMarcaDTOById(id);
+            if (marca == null)
             {
-                NotFound();
+                return NotFound();
             }
             return Ok(marca);
         }
@@ -66,7 +67,7 @@ namespace APItoPFinal.Controllers
                 return NotFound(ex.Message);
             }
         }
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public IActionResult DeletarMarca(Guid id)
         {
             try

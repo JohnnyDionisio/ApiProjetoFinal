@@ -15,5 +15,7 @@ namespace APItoPFinal.Data
         public DbSet<Marca> Marcas { get; set; }
 
         public DbSet<Compra> Compras { get; set; }
+
+        public DbSet<Usuario> Usuarios { get; set; }
     }
 }

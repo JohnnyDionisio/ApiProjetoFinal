@@ -1,4 +1,5 @@
-﻿using APItoPFinal.Models;
+﻿using APItoPFinal.DTOs;
+using APItoPFinal.Models;
 using APItoPFinal.Repository;
 
 namespace APItoPFinal.Service
@@ -19,6 +20,13 @@ namespace APItoPFinal.Service
         {
             return _repository.GetCategoriaById(id);
         }
+
+        // NOVO
+        public async Task<CategoriaDTO?> GetCategoriaDTOById(Guid id)
+        {
+            return await _repository.GetCategoriaDTOByIdAsync(id);
+        }
+
         public void AdicionarCategoria(Categoria categoria)
         {
             var categoriaExiste = _repository.GetCategoriaById(categoria.Id);

@@ -24,7 +24,7 @@ namespace APItoPFinal.Service
         // Para o Controller (GET por id) - devolve DTO
         public async Task<InstrumentoDTO?> GetInstrumentoDTOById(Guid id)
         {
-            return await _repository.GetByIdDTOAsync(id);
+            return await _repository.GetByIdDTOAsync(id);   
         }
 
         // Uso interno (validações) - devolve entidade completa
