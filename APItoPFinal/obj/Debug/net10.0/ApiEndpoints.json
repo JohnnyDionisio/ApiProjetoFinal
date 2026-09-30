@@ -153,22 +153,12 @@
     "Order": 0,
     "Parameters": [
       {
-        "Name": "compra",
-        "Type": "APItoPFinal.Models.Compra",
+        "Name": "input",
+        "Type": "APItoPFinal.DTOs.CompraInputDTO",
         "IsRequired": true
       }
     ],
-    "ReturnTypes": [
-      {
-        "Type": "APItoPFinal.Models.Compra",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
+    "ReturnTypes": []
   },
   {
     "ContainingType": "APItoPFinal.Controllers.ComprasController",
@@ -210,8 +200,8 @@
         "IsRequired": true
       },
       {
-        "Name": "compra",
-        "Type": "APItoPFinal.Models.Compra",
+        "Name": "input",
+        "Type": "APItoPFinal.DTOs.CompraInputDTO",
         "IsRequired": true
       }
     ],

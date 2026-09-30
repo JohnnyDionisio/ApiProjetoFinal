@@ -4,6 +4,7 @@ using APItoPFinal.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace APItoPFinal.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260930231308_CompraInstrumentoAtualizadoVariosCompra")]
+    partial class CompraInstrumentoAtualizadoVariosCompra
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -52,12 +55,17 @@ namespace APItoPFinal.Migrations
                     b.Property<DateTime>("DataCompra")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid>("InstrumentoId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Nome")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("InstrumentoId");
 
                     b.ToTable("Compras");
                 });
@@ -150,19 +158,15 @@ namespace APItoPFinal.Migrations
                     b.ToTable("Usuarios");
                 });
 
-            modelBuilder.Entity("CompraInstrumento", b =>
+            modelBuilder.Entity("APItoPFinal.Models.Compra", b =>
                 {
-                    b.Property<Guid>("ComprasId")
-                        .HasColumnType("uniqueidentifier");
+                    b.HasOne("APItoPFinal.Models.Instrumento", "Instrumento")
+                        .WithMany("Compras")
+                        .HasForeignKey("InstrumentoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Property<Guid>("InstrumentosId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("ComprasId", "InstrumentosId");
-
-                    b.HasIndex("InstrumentosId");
-
-                    b.ToTable("CompraInstrumento");
+                    b.Navigation("Instrumento");
                 });
 
             modelBuilder.Entity("APItoPFinal.Models.Instrumento", b =>
@@ -184,24 +188,14 @@ namespace APItoPFinal.Migrations
                     b.Navigation("Marca");
                 });
 
-            modelBuilder.Entity("CompraInstrumento", b =>
-                {
-                    b.HasOne("APItoPFinal.Models.Compra", null)
-                        .WithMany()
-                        .HasForeignKey("ComprasId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("APItoPFinal.Models.Instrumento", null)
-                        .WithMany()
-                        .HasForeignKey("InstrumentosId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("APItoPFinal.Models.Categoria", b =>
                 {
                     b.Navigation("Instrumentos");
+                });
+
+            modelBuilder.Entity("APItoPFinal.Models.Instrumento", b =>
+                {
+                    b.Navigation("Compras");
                 });
 
             modelBuilder.Entity("APItoPFinal.Models.Marca", b =>

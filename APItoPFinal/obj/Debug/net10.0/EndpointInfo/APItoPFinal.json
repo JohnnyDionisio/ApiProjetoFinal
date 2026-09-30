@@ -277,17 +277,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Compra"
+                "$ref": "#/components/schemas/CompraInputDTO"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/Compra"
+                "$ref": "#/components/schemas/CompraInputDTO"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/Compra"
+                "$ref": "#/components/schemas/CompraInputDTO"
               }
             }
           },
@@ -295,24 +295,7 @@
         },
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/Compra"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Compra"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Compra"
-                }
-              }
-            }
+            "description": "OK"
           }
         }
       }
@@ -375,17 +358,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Compra"
+                "$ref": "#/components/schemas/CompraInputDTO"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/Compra"
+                "$ref": "#/components/schemas/CompraInputDTO"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/Compra"
+                "$ref": "#/components/schemas/CompraInputDTO"
               }
             }
           },
@@ -1042,10 +1025,24 @@
           "dataCompra": {
             "type": "string",
             "format": "date-time"
+          }
+        }
+      },
+      "CompraInputDTO": {
+        "type": "object",
+        "properties": {
+          "nome": {
+            "type": "string"
           },
-          "instrumentoId": {
-            "type": "string",
-            "format": "uuid"
+          "cpf": {
+            "type": "string"
+          },
+          "instrumentoIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
           }
         }
       },

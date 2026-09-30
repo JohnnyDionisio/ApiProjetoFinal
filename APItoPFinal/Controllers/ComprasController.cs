@@ -1,4 +1,5 @@
-﻿using APItoPFinal.Models;
+﻿using APItoPFinal.DTOs;
+using APItoPFinal.Models;
 using APItoPFinal.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -26,7 +27,7 @@ namespace APItoPFinal.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Compra>> GetComprasById(Guid id)
         {
-            var compra = await _service.GetComprasById(id);
+            var compra = await _service.GetComprasDTOById(id);
 
             if (compra == null)
             {
@@ -37,14 +38,13 @@ namespace APItoPFinal.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Compra>> PostCompras(Compra compra)
+        public async Task<ActionResult> PostCompras(CompraInputDTO input)
         {
             try
             {
-                compra.Id = Guid.NewGuid();
-                await _service.AdicionarCompra(compra);
-
-                return CreatedAtAction(nameof(GetComprasById), new { id = compra.Id }, compra);
+                var id = await _service.AdicionarCompra(input);
+                var compraCriada = await _service.GetComprasDTOById(id);
+                return CreatedAtAction(nameof(GetComprasById), new { id }, compraCriada);
             }
             catch (Exception ex)
             {
@@ -53,16 +53,11 @@ namespace APItoPFinal.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> PutCompras(Guid id, Compra compra)
+        public async Task<ActionResult> PutCompras(Guid id, CompraInputDTO input)
         {
-            if (id != compra.Id)
-            {
-                return BadRequest("O ID informado não confere com o objeto enviado.");
-            }
-
             try
             {
-                await _service.AtualizarCompra(compra);
+                await _service.AtualizarCompra(id, input);
                 return NoContent();
             }
             catch (Exception ex)

@@ -1,4 +1,5 @@
 ﻿using APItoPFinal.Data;
+using APItoPFinal.DTOs;
 using APItoPFinal.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,6 +18,29 @@ namespace APItoPFinal.Repository
         {
             return await _context.Compras.ToListAsync();
         }
+        public async Task<Compra?> PuxarCompraEntityById(Guid id)
+        {
+            return await _context.Compras.Include(c => c.Instrumentos).FirstOrDefaultAsync(c => c.Id == id);
+        }
+        public async Task<CompraDTO> PuxarComprasById(Guid id)
+        {
+            return await _context.Compras.Include(c => c.Instrumentos).Where(c => c.Id == id).Select(c => new CompraDTO
+            {
+                Id = c.Id,
+                Nome = c.Nome,
+                CPF = c.CPF,
+                DataCompra = c.DataCompra,
+                Instrumentos = c.Instrumentos.Select(i => new InstrumentoResumoDTO
+                {
+                    Id = i.Id,
+                    Identificação = i.Identificação,
+                    Nome = i.Nome,
+                    Preco = i.Preco,
+                    Descricao = i.Descricao,
+                    Disponibilidade = i.Disponibilidade
+                }).ToList()
+            }).FirstOrDefaultAsync();
+        }
         public async Task<Compra> PostCompras(Compra compra)
         {
             _context.Compras.Add(compra);
@@ -24,26 +48,9 @@ namespace APItoPFinal.Repository
 
             return compra;
         }
-        public async Task<Compra> PutCompras(Guid id, Compra compra)
+        public async Task SaveChangesAsync()
         {
-            _context.Entry(compra).State = EntityState.Modified;
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                var compraTemp = _context.Compras.Any(c => c.Id == id);
-                if (!compraTemp)
-                {
-                    return null;
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            return compra;
+            await _context.SaveChangesAsync();
         }
         public async Task<Compra> DeleteCompras(Guid id)
         {
