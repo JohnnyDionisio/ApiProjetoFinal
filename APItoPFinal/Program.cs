@@ -14,6 +14,27 @@ builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
+builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Registra o Repository e a Service dos Instrumentos
+builder.Services.AddScoped<InstrumentosRepository>();
+builder.Services.AddScoped<InstrumentoService>();
+
+// Registra o Repository e a Service dos Compras
+builder.Services.AddScoped<CompraRepository>();
+builder.Services.AddScoped<CompraService>();
+
+// Registre o Repository e a Service de Categorias
+builder.Services.AddScoped<CategoriasRepository>();
+builder.Services.AddScoped<CategoriaService>();
+
+// Registra o Repository e a Service das Marcas
+builder.Services.AddScoped<MarcaRepository>();
+builder.Services.AddScoped<MarcaService>();
+
+builder.Services.AddScoped<UsuariosRepository>();
+builder.Services.AddScoped<UsuariosService>();
+
 var chave = new SymmetricSecurityKey(RandomNumberGenerator.GetBytes(32));
 
 builder.Services.AddSingleton(chave);
@@ -34,24 +55,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 
 builder.Services.AddAuthorization();
 
-builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-// Registra o Repository e a Service dos Instrumentos
-builder.Services.AddScoped<InstrumentosRepository>();
-builder.Services.AddScoped<InstrumentoService>();
-
-// Registra o Repository e a Service dos Compras
-builder.Services.AddScoped<CompraRepository>();
-builder.Services.AddScoped<CompraService>();
-
-// Registre o Repository e a Service de Categorias
-builder.Services.AddScoped<CategoriasRepository>();
-builder.Services.AddScoped<CategoriaService>();
-
-// Registra o Repository e a Service das Marcas
-builder.Services.AddScoped<MarcaRepository>();
-builder.Services.AddScoped<MarcaService>();
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -61,6 +64,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

@@ -9,7 +9,7 @@
     "Parameters": [
       {
         "Name": "dados",
-        "Type": "APItoPFinal.Models.LoginRequest",
+        "Type": "APItoPFinal.Models.Usuario",
         "IsRequired": true
       }
     ],

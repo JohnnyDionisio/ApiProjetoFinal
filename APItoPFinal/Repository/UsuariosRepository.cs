@@ -30,8 +30,14 @@ namespace APItoPFinal.Repository
         {
             return _context.Usuarios.FirstOrDefault(u => u.NomeUsuario == usuarioNome);
         }
+        public async Task<Usuario?> GetUsuariosBySenha(string senha)
+        {
+            return _context.Usuarios.FirstOrDefault(s => s.Senha == senha);
+        }
         public async Task<Usuario> PostUsuarios(Usuario usuario)
         {
+            usuario.Senha = BCrypt.Net.BCrypt.HashPassword(usuario.Senha);
+
             _context.Usuarios.Add(usuario);
             await _context.SaveChangesAsync();
 
@@ -59,17 +65,14 @@ namespace APItoPFinal.Repository
             }
             return usuario;
         }
-        public async Task<Usuario?> DeleteUsuario(Guid id)
+        public void DeleteUsuario(Guid id)
         {
-            var usuario = await _context.Usuarios.FindAsync(id);
-            if(usuario == null)
+            var usuario = _context.Usuarios.FirstOrDefault(u => u.Id == id);
+            if(usuario != null)
             {
-                return null;
+              _context.Usuarios.Remove(usuario);
+              _context.SaveChanges();  
             }
-            _context.Usuarios.Remove(usuario);
-            await _context.SaveChangesAsync();
-
-            return usuario;
         }
     }
 }

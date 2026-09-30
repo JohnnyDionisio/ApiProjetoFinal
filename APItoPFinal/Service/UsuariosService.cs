@@ -44,7 +44,7 @@ namespace APItoPFinal.Service
 
             usuario.Id = Guid.NewGuid();
 
-            _repository.PostUsuarios(usuario);
+            await _repository.PostUsuarios(usuario);
         }
 
         public async Task AtualizarUsuarios(Usuario usuario)
@@ -73,7 +73,7 @@ namespace APItoPFinal.Service
             await _repository.PutUsuarios(usuario.Id, usuarioExiste);
         }
 
-        public async Task<Usuario?> DeletarUsuarios(Guid id)
+        public async Task DeletarUsuarios(Guid id)
         {
             var usuarioExiste = await _repository.GetUsuariosById(id);
             if (usuarioExiste == null)
@@ -81,7 +81,7 @@ namespace APItoPFinal.Service
                 throw new Exception("Usuário não encontrado");
             }
 
-            return await _repository.DeleteUsuario(id);
+             _repository.DeleteUsuario(id);
         }
     }
 }

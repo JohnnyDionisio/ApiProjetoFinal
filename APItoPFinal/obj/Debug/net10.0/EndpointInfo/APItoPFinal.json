@@ -22,17 +22,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/LoginRequest"
+                "$ref": "#/components/schemas/Usuario"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/LoginRequest"
+                "$ref": "#/components/schemas/Usuario"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/LoginRequest"
+                "$ref": "#/components/schemas/Usuario"
               }
             }
           },
@@ -1186,21 +1186,6 @@
           },
           "disponibilidade": {
             "type": "boolean"
-          }
-        }
-      },
-      "LoginRequest": {
-        "required": [
-          "usuario",
-          "senha"
-        ],
-        "type": "object",
-        "properties": {
-          "usuario": {
-            "type": "string"
-          },
-          "senha": {
-            "type": "string"
           }
         }
       },

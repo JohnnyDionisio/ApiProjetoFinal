@@ -1,4 +1,6 @@
 ﻿using APItoPFinal.Models;
+using APItoPFinal.Repository;
+using APItoPFinal.Service;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -13,15 +15,19 @@ namespace APItoPFinal.Controllers
     public class AuthController : ControllerBase
     {
         private readonly SymmetricSecurityKey chave;
+        private readonly UsuariosRepository _repository;
 
-        public AuthController(SymmetricSecurityKey chave)
+        public AuthController(SymmetricSecurityKey chave, UsuariosRepository repository)
         {
             this.chave = chave;
+            _repository = repository;
         }
         [HttpPost("login")]
-        public IActionResult Login(LoginRequest dados)
+        public async Task<IActionResult> Login(Usuario dados)
         {
-            if(dados.Usuario != "Johnny" || dados.Senha != "123456")
+            var usuario = await _repository.GetUsuariosByCPF(dados.CPF);
+
+            if (usuario == null || !BCrypt.Net.BCrypt.Verify(dados.Senha, usuario.Senha))
             {
                 return Unauthorized();
             }
@@ -30,7 +36,7 @@ namespace APItoPFinal.Controllers
             var token = new JwtSecurityToken(
                 issuer: "ExemploJwt",
                 audience: "Alunos",
-                claims: new[] { new Claim(ClaimTypes.Name, dados.Usuario) },
+                claims: new[] { new Claim(ClaimTypes.Name, dados.CPF) },
                 expires: expiracao,
                 signingCredentials: new SigningCredentials(chave, SecurityAlgorithms.HmacSha256)
                 );
