@@ -8,36 +8,61 @@ namespace APItoPFinal.Service
     {
         private readonly CompraRepository _repository;
         private readonly InstrumentosRepository _IRepository;
+        private readonly UsuariosRepository _URepository;
 
-        public CompraService(CompraRepository repository, InstrumentosRepository IRepository)
+        public CompraService(CompraRepository repository, InstrumentosRepository IRepository, UsuariosRepository URepository)
         {
             _repository = repository;
             _IRepository = IRepository;
+            _URepository = URepository;
         }
 
-        public async Task<List<Compra>> GetCompras()
+        public async Task<List<Compra>> GetCompras(Guid usuarioId, bool isAdmin)
         {
             var compras = await _repository.PuxarCompras();
+            if (!isAdmin)
+            {
+                compras = compras.Where(c => c.UsuarioId == usuarioId).ToList();
+            }
+
             return compras.ToList();
         }
 
-        public async Task<CompraDTO?> GetComprasDTOById(Guid id)
+        public async Task<CompraDTO?> GetComprasDTOById(Guid id, Guid usuarioId, bool isAdmin)
         {
-            return await _repository.PuxarComprasById(id);
+            var compra = await _repository.PuxarComprasById(id);
+
+            if(compra == null)
+            {
+                return null;
+            }
+
+            if(!isAdmin && compra.UsuarioId != usuarioId)
+            {
+                throw new UnauthorizedAccessException("Acesso negado. Você não tem permissão para acessar esta compra.");
+            }
+            return compra;
         }
 
-        public async Task<Guid> AdicionarCompra(CompraInputDTO input)
+        public async Task<Guid> AdicionarCompra(CompraInputDTO input, Guid usuarioId)
         {
             if (input.InstrumentoIds == null || !input.InstrumentoIds.Any())
             {
                 throw new Exception("É necessário informar ao menos um instrumento.");
             }
 
+            var usuario = await _URepository.GetUsuariosById(usuarioId);
+            if(usuario == null)
+            {
+                throw new Exception("Usuário não encontrado");
+            }
+
             var compra = new Compra
             {
                 Id = Guid.NewGuid(),
-                Nome = input.Nome,
-                CPF = input.CPF,
+                Nome = usuario.Nome,       // vem do usuário logado, não do body
+                CPF = usuario.CPF,         // vem do usuário logado, não do body
+                UsuarioId = usuario.Id,
                 DataCompra = DateTime.Now,
                 Instrumentos = new List<Instrumento>()
             };
@@ -106,9 +131,6 @@ namespace APItoPFinal.Service
                 instrumento.Disponibilidade = false;
                 compraExiste.Instrumentos.Add(instrumento);
             }
-
-            compraExiste.Nome = input.Nome;
-            compraExiste.CPF = input.CPF;
 
             await _repository.SaveChangesAsync();
         }

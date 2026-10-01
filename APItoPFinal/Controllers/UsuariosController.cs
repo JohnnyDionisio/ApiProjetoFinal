@@ -1,5 +1,6 @@
 ﻿using APItoPFinal.Models;
 using APItoPFinal.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,12 +18,14 @@ namespace APItoPFinal.Controllers
             _service = service;
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Usuario>>> GetUsuarios()
         {
             return await _service.GetUsuarios();
         }
 
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<ActionResult<Usuario>> GetUsuariosById(Guid id)
         {
@@ -40,7 +43,7 @@ namespace APItoPFinal.Controllers
             await _service.AdicionarUsuarios(usuario);
             return CreatedAtAction("GetUsuariosById", new {id = usuario.Id}, usuario);
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUsuarios(Guid id, Usuario usuario)
         {
@@ -61,6 +64,7 @@ namespace APItoPFinal.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteUsuarios(Guid id)
         {

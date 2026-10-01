@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Usuario\\Desktop\\Programações\\C#\\API\\ApiProjetoFinal\\APItoPFinal\\APItoPFinal.csproj": {}
+    "C:\\Users\\53362182860\\Desktop\\Programações\\C#\\APItoPFinal\\APItoPFinal\\APItoPFinal.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Usuario\\Desktop\\Programações\\C#\\API\\ApiProjetoFinal\\APItoPFinal\\APItoPFinal.csproj": {
+    "C:\\Users\\53362182860\\Desktop\\Programações\\C#\\APItoPFinal\\APItoPFinal\\APItoPFinal.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Usuario\\Desktop\\Programações\\C#\\API\\ApiProjetoFinal\\APItoPFinal\\APItoPFinal.csproj",
+        "projectUniqueName": "C:\\Users\\53362182860\\Desktop\\Programações\\C#\\APItoPFinal\\APItoPFinal\\APItoPFinal.csproj",
         "projectName": "APItoPFinal",
-        "projectPath": "C:\\Users\\Usuario\\Desktop\\Programações\\C#\\API\\ApiProjetoFinal\\APItoPFinal\\APItoPFinal.csproj",
-        "packagesPath": "C:\\Users\\Usuario\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Usuario\\Desktop\\Programações\\C#\\API\\ApiProjetoFinal\\APItoPFinal\\obj\\",
+        "projectPath": "C:\\Users\\53362182860\\Desktop\\Programações\\C#\\APItoPFinal\\APItoPFinal\\APItoPFinal.csproj",
+        "packagesPath": "C:\\Users\\53362182860\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\53362182860\\Desktop\\Programações\\C#\\APItoPFinal\\APItoPFinal\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\Usuario\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\53362182860\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -104,7 +104,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.401/PortableRuntimeIdentifierGraph.json",
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.400/PortableRuntimeIdentifierGraph.json",
           "packagesToPrune": {
             "Microsoft.AspNetCore": "(,10.0.32767]",
             "Microsoft.AspNetCore.Antiforgery": "(,10.0.32767]",

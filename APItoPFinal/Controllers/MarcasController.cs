@@ -35,6 +35,7 @@ namespace APItoPFinal.Controllers
             }
             return Ok(marca);
         }
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public ActionResult<Marca> AdicionarMarcas(Marca marca)
         {
@@ -49,6 +50,7 @@ namespace APItoPFinal.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public IActionResult AtualizarMarca(Guid id, Marca marca)
         {
@@ -67,6 +69,7 @@ namespace APItoPFinal.Controllers
                 return NotFound(ex.Message);
             }
         }
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public IActionResult DeletarMarca(Guid id)
         {

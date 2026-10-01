@@ -166,7 +166,6 @@ C:\Users\53362182860\Desktop\Programações\C#\APItoPFinal\APItoPFinal\obj\Debug
 C:\Users\53362182860\Desktop\Programações\C#\APItoPFinal\APItoPFinal\obj\Debug\net10.0\APItoPFinal.sourcelink.json
 C:\Users\53362182860\Desktop\Programações\C#\APItoPFinal\APItoPFinal\bin\Debug\net10.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 C:\Users\53362182860\Desktop\Programações\C#\APItoPFinal\APItoPFinal\bin\Debug\net10.0\Microsoft.Bcl.Cryptography.dll
-C:\Users\53362182860\Desktop\Programações\C#\APItoPFinal\APItoPFinal\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt
 C:\Users\Usuario\Desktop\Programações\C#\API\ApiProjetoFinal\APItoPFinal\bin\Debug\net10.0\appsettings.Development.json
 C:\Users\Usuario\Desktop\Programações\C#\API\ApiProjetoFinal\APItoPFinal\bin\Debug\net10.0\appsettings.json
 C:\Users\Usuario\Desktop\Programações\C#\API\ApiProjetoFinal\APItoPFinal\bin\Debug\net10.0\APItoPFinal.staticwebassets.endpoints.json
@@ -337,3 +336,5 @@ C:\Users\Usuario\Desktop\Programações\C#\API\ApiProjetoFinal\APItoPFinal\obj\D
 C:\Users\Usuario\Desktop\Programações\C#\API\ApiProjetoFinal\APItoPFinal\obj\Debug\net10.0\ref\APItoPFinal.dll
 C:\Users\Usuario\Desktop\Programações\C#\API\ApiProjetoFinal\APItoPFinal\bin\Debug\net10.0\BCrypt-Net-Next.dll
 C:\Users\Usuario\Desktop\Programações\C#\API\ApiProjetoFinal\APItoPFinal\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt
+C:\Users\53362182860\Desktop\Programações\C#\APItoPFinal\APItoPFinal\bin\Debug\net10.0\BCrypt-Net-Next.dll
+C:\Users\53362182860\Desktop\Programações\C#\APItoPFinal\APItoPFinal\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt

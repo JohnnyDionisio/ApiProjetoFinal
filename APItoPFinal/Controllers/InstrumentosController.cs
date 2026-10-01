@@ -41,6 +41,7 @@ namespace APItoPFinal.Controllers
             return instrumento;
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<ActionResult<Instrumento>> PostInstrumento(Instrumento instrumento)
         {
@@ -49,6 +50,7 @@ namespace APItoPFinal.Controllers
             return CreatedAtAction("GetInstrumentosById", new { id = instrumento.Id }, instrumento);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutInstrumento(Guid id, Instrumento instrumento)
         {
@@ -73,6 +75,7 @@ namespace APItoPFinal.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteInstrumento(Guid id)
         {

@@ -10,6 +10,8 @@
 
         public DateTime DataCompra { get; set; }
 
+        public Guid UsuarioId { get; set; }
+
         public List<InstrumentoResumoDTO> Instrumentos { get; set; }
     }
 }

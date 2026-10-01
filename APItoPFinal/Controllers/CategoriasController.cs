@@ -36,6 +36,7 @@ namespace APItoPFinal.Controllers
             return Ok(categoria);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public ActionResult<Categoria> PostCategoria(Categoria categoria)
         {
@@ -50,6 +51,7 @@ namespace APItoPFinal.Controllers
             }
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public IActionResult PutCategoria(Guid id, Categoria categoria)
         {
@@ -69,6 +71,7 @@ namespace APItoPFinal.Controllers
             }
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public IActionResult DeleteCategoria(Guid id)
         {

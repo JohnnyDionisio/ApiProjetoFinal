@@ -43,6 +43,7 @@ namespace APItoPFinal.Service
             }
 
             usuario.Id = Guid.NewGuid();
+            usuario.Cargo = "Cliente";
 
             await _repository.PostUsuarios(usuario);
         }

@@ -1025,18 +1025,16 @@
           "dataCompra": {
             "type": "string",
             "format": "date-time"
+          },
+          "usuarioId": {
+            "type": "string",
+            "format": "uuid"
           }
         }
       },
       "CompraInputDTO": {
         "type": "object",
         "properties": {
-          "nome": {
-            "type": "string"
-          },
-          "cpf": {
-            "type": "string"
-          },
           "instrumentoIds": {
             "type": "array",
             "items": {
@@ -1250,6 +1248,9 @@
             "type": "string"
           },
           "senha": {
+            "type": "string"
+          },
+          "cargo": {
             "type": "string"
           }
         }

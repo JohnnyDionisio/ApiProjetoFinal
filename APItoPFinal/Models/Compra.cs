@@ -17,6 +17,11 @@ namespace APItoPFinal.Models
 
         public DateTime DataCompra { get; set; } = DateTime.Now;
 
+        public Guid UsuarioId { get; set; }
+
+        [JsonIgnore]
+        public Usuario? Usuario { get; set; }
+
         [JsonIgnore]
         public ICollection<Instrumento> Instrumentos { get; set; } = new List<Instrumento>();
 

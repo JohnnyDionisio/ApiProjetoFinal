@@ -36,7 +36,7 @@ namespace APItoPFinal.Controllers
             var token = new JwtSecurityToken(
                 issuer: "ExemploJwt",
                 audience: "Alunos",
-                claims: new[] { new Claim(ClaimTypes.Name, dados.CPF) },
+                claims: new[] {new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()), new Claim(ClaimTypes.Name, dados.CPF), new Claim(ClaimTypes.Role, usuario.Cargo) },
                 expires: expiracao,
                 signingCredentials: new SigningCredentials(chave, SecurityAlgorithms.HmacSha256)
                 );

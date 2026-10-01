@@ -30,6 +30,7 @@ namespace APItoPFinal.Repository
                 Nome = c.Nome,
                 CPF = c.CPF,
                 DataCompra = c.DataCompra,
+                UsuarioId = c.UsuarioId,
                 Instrumentos = c.Instrumentos.Select(i => new InstrumentoResumoDTO
                 {
                     Id = i.Id,
