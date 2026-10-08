@@ -59,7 +59,7 @@ namespace APItoPFinal.Controllers
             {
             var id = await _service.AdicionarCompra(input, GetUsuarioLogadoId());
             var compraCriada = await _service.GetComprasDTOById(id, GetUsuarioLogadoId(), IsAdmin());
-            return CreatedAtAction(nameof(GetComprasById), new { id = compraCriada.Id });
+            return Created($"/api/compras/{id}", compraCriada);
             }
             catch (Exception ex)
             {
@@ -82,16 +82,20 @@ namespace APItoPFinal.Controllers
             }
         }
 
-        [Authorize(Roles = "Admin")]
+
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteCompras(Guid id)
         {
             try
             {
-                await _service.DeletarCompra(id);
+                await _service.DeletarCompra(id, GetUsuarioLogadoId(), IsAdmin());
                 return NoContent();
             }
-            catch (Exception ex)
+            catch (UnauthorizedAccessException)
+            {
+                return Forbid();
+            }
+            catch (KeyNotFoundException ex)
             {
                 return NotFound(ex.Message);
             }

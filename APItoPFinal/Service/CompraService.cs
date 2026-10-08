@@ -135,12 +135,16 @@ namespace APItoPFinal.Service
             await _repository.SaveChangesAsync();
         }
 
-        public async Task DeletarCompra(Guid id)
+        public async Task DeletarCompra(Guid id, Guid usuarioId, bool isAdmin)
         {
             var compra = await _repository.PuxarCompraEntityById(id);
             if (compra == null)
             {
-                throw new Exception("Compra não encontrada.");
+                throw new KeyNotFoundException("Compra não encontrada.");
+            }
+            if(!isAdmin && compra.UsuarioId != usuarioId)
+            {
+                throw new UnauthorizedAccessException("Acesso negado. Você não tem permissão para deletar a compra de outro usuário.");
             }
 
             foreach (var instrumento in compra.Instrumentos)
