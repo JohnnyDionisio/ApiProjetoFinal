@@ -1,4 +1,5 @@
-﻿using APItoPFinal.Models;
+﻿using APItoPFinal.DTOs;
+using APItoPFinal.Models;
 using APItoPFinal.Repository;
 
 namespace APItoPFinal.Service
@@ -12,25 +13,30 @@ namespace APItoPFinal.Service
             _repository = repository;
         }
 
-        public async Task<List<Usuario>> GetUsuarios()
+        private static UsuarioDTO ToDTO(Usuario u) => new UsuarioDTO
         {
-            var usuario = await _repository.GetUsuarios();
-            return usuario.ToList();
+            Id = u.Id,
+            Nome = u.Nome,
+            NomeUsuario = u.NomeUsuario,
+            Email = u.Email,
+            CPF = u.CPF,
+            Cargo = u.Cargo
+        };
+
+        public async Task<List<UsuarioDTO>> GetUsuarios()
+        {
+            var usuarios = await _repository.GetUsuarios();
+            return usuarios.Select(ToDTO).ToList();
         }
 
-        public async Task<Usuario?> GetUsuariosById(Guid id)
+        public async Task<UsuarioDTO?> GetUsuariosById(Guid id)
         {
-            var usuario = await _repository.GetUsuarios();
-            return usuario.FirstOrDefault(u => u.Id == id);
+            var usuario = await _repository.GetUsuariosById(id);
+            return usuario == null? null : ToDTO(usuario);
         }
 
-        public async Task AdicionarUsuarios(Usuario usuario)
+        public async Task<UsuarioDTO> AdicionarUsuarios(Usuario usuario)
         {
-            var usuarioExiste = await _repository.GetUsuariosById(usuario.Id);
-            if (usuarioExiste != null)
-            {
-                throw new Exception("Usuario já existe.");
-            }
             var usuarioCpf = await _repository.GetUsuariosByCPF(usuario.CPF);
             if (usuarioCpf != null)
             {
@@ -46,32 +52,29 @@ namespace APItoPFinal.Service
             usuario.Cargo = "Cliente";
 
             await _repository.PostUsuarios(usuario);
+            return ToDTO(usuario);
         }
 
-        public async Task AtualizarUsuarios(Usuario usuario)
+        public async Task AtualizarUsuarios(Guid id, UsuarioAtualizadoDTO dto)
         {
-            var usuarioExiste = await _repository.GetUsuariosById(usuario.Id);
-            if (usuarioExiste == null)
+            var usuario = await _repository.GetUsuariosById(id);
+            if(usuario == null)
             {
-                throw new Exception("Usuário não encontrado");
+                throw new KeyNotFoundException("Usuário não encontrado");
             }
 
-            var usuarioCpf = await _repository.GetUsuariosByCPF(usuario.CPF);
-            if (usuarioCpf != null && usuarioCpf.Id != usuario.Id)
+            var usuarioCpf = await _repository.GetUsuariosByCPF(dto.CPF);
+            if(usuarioCpf != null || usuarioCpf.Id != id)
             {
-                throw new Exception("CPF já cadastrado");
+                throw new Exception("Já existe um usuário cadastrado com esse CPF");
             }
 
-            var usuarioNome = await _repository.GetUsuariosByName(usuario.NomeUsuario);
-            if (usuarioNome != null && usuarioNome.Id != usuario.Id)
-            {
-                throw new Exception("Já existe um cadastro com esse nome de usuário");
-            }
+            usuario.Nome = dto.Nome;
+            usuario.NomeUsuario = dto.NomeUsuario;
+            usuario.Email = dto.Email;
+            usuario.CPF = dto.CPF;
 
-            usuarioExiste.NomeUsuario = usuario.NomeUsuario;
-            usuarioExiste.CPF = usuario.CPF;
-
-            await _repository.PutUsuarios(usuario.Id, usuarioExiste);
+            await _repository.PutUsuarios(id, usuario);
         }
 
         public async Task DeletarUsuarios(Guid id)
@@ -79,7 +82,7 @@ namespace APItoPFinal.Service
             var usuarioExiste = await _repository.GetUsuariosById(id);
             if (usuarioExiste == null)
             {
-                throw new Exception("Usuário não encontrado");
+                throw new KeyNotFoundException("Usuário não encontrado");
             }
 
              _repository.DeleteUsuario(id);

@@ -4,7 +4,8 @@ using APItoPFinal.Service;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using System.Security.Cryptography;
+using System.Text;
+using APItoPFinal.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,22 +36,32 @@ builder.Services.AddScoped<MarcaService>();
 builder.Services.AddScoped<UsuariosRepository>();
 builder.Services.AddScoped<UsuariosService>();
 
-var chave = new SymmetricSecurityKey(RandomNumberGenerator.GetBytes(32));
+var jwt = builder.Configuration.GetSection("Jwt").Get<JwtSettings>() ?? new JwtSettings();
 
+if (string.IsNullOrWhiteSpace(jwt.Key) || Encoding.UTF8.GetBytes(jwt.Key).Length < 32)
+{
+    throw new InvalidOperationException(
+        "Jwt:Key ausente ou curta demais (mínimo 32 caracteres). " +
+        "Configure com: dotnet user-secrets set \"Jwt:Key\" \"<sua-chave>\"");
+}
+
+var chave = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Key));
+
+builder.Services.AddSingleton(jwt);
 builder.Services.AddSingleton(chave);
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
-        ValidIssuer = "ExemploJwt",
+        ValidIssuer = jwt.Issuer,
         ValidateAudience = true,
-        ValidAudience = "Alunos",
+        ValidAudience = jwt.Audience,
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = chave,
         ValidateLifetime = true,
         ClockSkew = TimeSpan.Zero,
-        ValidAlgorithms = new[] { SecurityAlgorithms.HmacSha256}
+        ValidAlgorithms = new[] { SecurityAlgorithms.HmacSha256 }
     });
 
 builder.Services.AddAuthorization();

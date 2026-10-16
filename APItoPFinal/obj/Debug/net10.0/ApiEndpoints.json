@@ -477,7 +477,7 @@
     ],
     "ReturnTypes": [
       {
-        "Type": "APItoPFinal.Models.Usuario",
+        "Type": "APItoPFinal.DTOs.UsuarioDTO",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -527,8 +527,8 @@
         "IsRequired": true
       },
       {
-        "Name": "usuario",
-        "Type": "APItoPFinal.Models.Usuario",
+        "Name": "dto",
+        "Type": "APItoPFinal.DTOs.UsuarioAtualizadoDTO",
         "IsRequired": true
       }
     ],
@@ -549,5 +549,25 @@
       }
     ],
     "ReturnTypes": []
+  },
+  {
+    "ContainingType": "APItoPFinal.Controllers.UsuariosController",
+    "Method": "GetMe",
+    "RelativePath": "api/Usuarios/me",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "APItoPFinal.DTOs.UsuarioDTO",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
   }
 ]
