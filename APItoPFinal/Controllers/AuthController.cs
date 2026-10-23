@@ -1,10 +1,12 @@
-﻿using APItoPFinal.Models;
+﻿using APItoPFinal.Helpers;
+using APItoPFinal.Models;
 using APItoPFinal.Repository;
 using APItoPFinal.Settings;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using APItoPFinal.DTOs;
 
 namespace APItoPFinal.Controllers
 {
@@ -13,10 +15,10 @@ namespace APItoPFinal.Controllers
     public class AuthController : ControllerBase
     {
         private readonly SymmetricSecurityKey _chave;
-        private readonly JwtSettngs _jwt;
+        private readonly JwtSettings _jwt;
         private readonly UsuariosRepository _repository;
 
-        public AuthController(SymmetricSecurityKey chave, JwtSettngs jwt, UsuariosRepository repository)
+        public AuthController(SymmetricSecurityKey chave, JwtSettings jwt, UsuariosRepository repository)
         {
             _chave = chave;
             _jwt = jwt;
@@ -24,9 +26,10 @@ namespace APItoPFinal.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login(Usuario dados)
+        public async Task<IActionResult> Login(LoginDTO dados)
         {
-            var usuario = await _repository.GetUsuariosByCPF(dados.CPF);
+            var cpf = Cpf.Normalizar(dados.CPF);
+            var usuario = await _repository.GetUsuariosByCPF(cpf);
 
             if (usuario == null || !BCrypt.Net.BCrypt.Verify(dados.Senha, usuario.Senha))
             {

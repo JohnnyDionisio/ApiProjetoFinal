@@ -1,6 +1,6 @@
 ﻿namespace APItoPFinal.Settings
 {
-    public class JwtSettngs
+    public class JwtSettings
     {
         public string Issuer { get; set; } = string.Empty;
 

@@ -59,11 +59,11 @@ namespace APItoPFinal.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        public async Task<ActionResult<UsuarioDTO>> PostUsuarios(Usuario usuario)
+        public async Task<ActionResult<UsuarioDTO>> PostUsuarios(RegisterDTO dto)
         {
             try
             {
-                var criado = await _service.AdicionarUsuarios(usuario);
+                var criado = await _service.AdicionarUsuarios(dto);
                 return CreatedAtAction("GetUsuariosById", new { id = criado.Id }, criado);
             }
             catch (Exception ex)

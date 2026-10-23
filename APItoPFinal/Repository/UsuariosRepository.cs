@@ -24,11 +24,15 @@ namespace APItoPFinal.Repository
         }
         public async Task<Usuario?> GetUsuariosByCPF(string cpf)
         {
-            return _context.Usuarios.FirstOrDefault(u => u.CPF == cpf);
+            return await _context.Usuarios.FirstOrDefaultAsync(u => u.CPF == cpf);
         }
         public async Task<Usuario?> GetUsuariosByName(string usuarioNome)
         {
-            return _context.Usuarios.FirstOrDefault(u => u.NomeUsuario == usuarioNome);
+            return await _context.Usuarios.FirstOrDefaultAsync(u => u.NomeUsuario == usuarioNome);
+        }
+        public async Task<Usuario?> GetUsuariosByEmail(string email)
+        {
+            return await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == email);
         }
         public async Task<Usuario?> GetUsuariosBySenha(string senha)
         {
