@@ -1,5 +1,7 @@
 ﻿using APItoPFinal.Data;
 using APItoPFinal.DTOs;
+using APItoPFinal.Exceptions;
+using APItoPFinal.Helpers;
 using APItoPFinal.Models;
 using APItoPFinal.Repository;
 using Microsoft.AspNetCore.Mvc;
@@ -38,12 +40,12 @@ namespace APItoPFinal.Service
             var instrumentoExiste = await _repository.GetByIdAsync(instrumento.Id);
             if (instrumentoExiste != null)
             {
-                throw new Exception("Instrumento já existe.");
+                throw new ConflictException("Instrumento já existe.");
             }
             var identificacao = _repository.GetInstrumentoByIdentity(instrumento.Identificação);
             if (identificacao != null)
             {
-                throw new Exception("Instrumento já cadastrado com essa identificação.");
+                throw new ConflictException("Instrumento já cadastrado com essa identificação.");
             }
 
             instrumento.Id = Guid.NewGuid();
@@ -57,12 +59,12 @@ namespace APItoPFinal.Service
             var instrumentoExiste = await _repository.GetByIdAsync(instrumento.Id);
             if (instrumentoExiste == null)
             {
-                throw new Exception("Instrumento não encontrado.");
+                throw new NotFoundException("Instrumento não encontrado.");
             }
             var identity = _repository.GetInstrumentoByIdentity(instrumento.Identificação);
             if (identity != null && identity.Id != instrumento.Id)
             {
-                throw new Exception("Instrumento já cadastrado com essa identificação.");
+                throw new ConflictException("Instrumento já cadastrado com essa identificação.");
             }
 
             instrumentoExiste.Identificação = instrumento.Identificação;
@@ -79,9 +81,20 @@ namespace APItoPFinal.Service
             var instrumentoExiste = await _repository.GetByIdAsync(id);
             if (instrumentoExiste == null)
             {
-                throw new Exception("Instrumento não encontrado.");
+                throw new NotFoundException("Instrumento não encontrado.");
             }
-            _repository.DeletarInstrumento(id);
+            if(_repository.EstaEmCompra(id))
+            {
+                throw new ConflictException("Não é possível excluir: este instrumento faz parte de uma ou mais compras.");
+            }
+            try
+            {
+                _repository.DeletarInstrumento(id);
+            }
+            catch(DbUpdateException ex) when (DbErros.ViolacaoDeFk(ex))
+            {
+                throw new ConflictException("Não é possível excluir: este instrumento está em uso");
+            }
         }
     }
 }

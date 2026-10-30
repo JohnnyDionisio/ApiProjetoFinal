@@ -1,8 +1,8 @@
 ﻿using APItoPFinal.DTOs;
+using APItoPFinal.Exceptions;
 using APItoPFinal.Models;
 using APItoPFinal.Service;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace APItoPFinal.Controllers
@@ -31,7 +31,7 @@ namespace APItoPFinal.Controllers
             var categoria = await _service.GetCategoriaDTOById(id);
             if (categoria == null)
             {
-                return NotFound();
+                throw new NotFoundException("Categoria não encontrada.");
             }
             return Ok(categoria);
         }
@@ -40,15 +40,8 @@ namespace APItoPFinal.Controllers
         [HttpPost]
         public ActionResult<Categoria> PostCategoria(Categoria categoria)
         {
-            try
-            {
-                _service.AdicionarCategoria(categoria);
-                return CreatedAtAction(nameof(GetCategoriaById), new { id = categoria.Id }, categoria);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            _service.AdicionarCategoria(categoria);
+            return CreatedAtAction(nameof(GetCategoriaById), new { id = categoria.Id }, categoria);
         }
 
         [Authorize(Roles = "Admin")]
@@ -57,33 +50,19 @@ namespace APItoPFinal.Controllers
         {
             if (id != categoria.Id)
             {
-                return BadRequest("O ID da URL não confere com o objeto.");
+                throw new BadRequestException("O ID da URL não confere com o objeto.");
             }
 
-            try
-            {
-                _service.AtualizarCategoria(categoria);
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                return NotFound(ex.Message);
-            }
+            _service.AtualizarCategoria(categoria);
+            return NoContent();
         }
 
         [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public IActionResult DeleteCategoria(Guid id)
         {
-            try
-            {
-                _service.DeletarCategoria(id);
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                return NotFound(ex.Message);
-            }
+            _service.DeletarCategoria(id);
+            return NoContent();
         }
     }
 }

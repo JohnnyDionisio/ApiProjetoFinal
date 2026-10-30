@@ -1,6 +1,7 @@
 ﻿using APItoPFinal.DTOs;
 using APItoPFinal.Models;
 using APItoPFinal.Repository;
+using APItoPFinal.Exceptions;
 
 namespace APItoPFinal.Service
 {
@@ -48,13 +49,13 @@ namespace APItoPFinal.Service
         {
             if (input.InstrumentoIds == null || !input.InstrumentoIds.Any())
             {
-                throw new Exception("É necessário informar ao menos um instrumento.");
+                throw new BadRequestException("É necessário informar ao menos um instrumento.");
             }
 
             var usuario = await _URepository.GetUsuariosById(usuarioId);
             if(usuario == null)
             {
-                throw new Exception("Usuário não encontrado");
+                throw new NotFoundException("Usuário não encontrado");
             }
 
             var compra = new Compra
@@ -72,11 +73,11 @@ namespace APItoPFinal.Service
                 var instrumento = await _IRepository.GetByIdAsync(instrumentoId);
                 if (instrumento == null)
                 {
-                    throw new Exception($"Instrumento {instrumentoId} não encontrado.");
+                    throw new NotFoundException($"Instrumento {instrumentoId} não encontrado.");
                 }
                 if (!instrumento.Disponibilidade)
                 {
-                    throw new Exception($"O instrumento '{instrumento.Nome}' já foi comprado.");
+                    throw new ConflictException($"O instrumento '{instrumento.Nome}' já foi comprado.");
                 }
 
                 instrumento.Disponibilidade = false;
@@ -92,12 +93,12 @@ namespace APItoPFinal.Service
             var compraExiste = await _repository.PuxarCompraEntityById(id);
             if (compraExiste == null)
             {
-                throw new Exception("Compra não encontrada.");
+                throw new NotFoundException("Compra não encontrada.");
             }
 
             if (input.InstrumentoIds == null || !input.InstrumentoIds.Any())
             {
-                throw new Exception("É necessário informar ao menos um instrumento.");
+                throw new BadRequestException("É necessário informar ao menos um instrumento.");
             }
 
             // Libera os instrumentos que saíram da lista
@@ -121,11 +122,11 @@ namespace APItoPFinal.Service
                 var instrumento = await _IRepository.GetByIdAsync(instrumentoId);
                 if (instrumento == null)
                 {
-                    throw new Exception($"Instrumento {instrumentoId} não encontrado.");
+                    throw new NotFoundException($"Instrumento {instrumentoId} não encontrado.");
                 }
                 if (!instrumento.Disponibilidade)
                 {
-                    throw new Exception($"O instrumento '{instrumento.Nome}' já foi comprado.");
+                    throw new ConflictException($"O instrumento '{instrumento.Nome}' já foi comprado.");
                 }
 
                 instrumento.Disponibilidade = false;

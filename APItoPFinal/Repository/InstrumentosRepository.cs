@@ -69,6 +69,11 @@ namespace APItoPFinal.Repository
             return _context.Instrumentos.FirstOrDefault(i => i.Identificação == identificacao);
         }
 
+        public bool EstaEmCompra(Guid id)
+        {
+            return _context.Compras.Any(c => c.Instrumentos.Any(i => i.Id == id));
+        }
+
         public void AdicionarInstrumento(Instrumento instrumento)
         {
             _context.Instrumentos.Add(instrumento);

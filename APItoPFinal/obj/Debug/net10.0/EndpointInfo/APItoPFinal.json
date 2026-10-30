@@ -22,17 +22,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Usuario"
+                "$ref": "#/components/schemas/LoginDTO"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/Usuario"
+                "$ref": "#/components/schemas/LoginDTO"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/Usuario"
+                "$ref": "#/components/schemas/LoginDTO"
               }
             }
           },
@@ -812,17 +812,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Usuario"
+                "$ref": "#/components/schemas/RegisterDTO"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/Usuario"
+                "$ref": "#/components/schemas/RegisterDTO"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/Usuario"
+                "$ref": "#/components/schemas/RegisterDTO"
               }
             }
           },
@@ -1213,6 +1213,21 @@
           }
         }
       },
+      "LoginDTO": {
+        "required": [
+          "cpf",
+          "senha"
+        ],
+        "type": "object",
+        "properties": {
+          "cpf": {
+            "type": "string"
+          },
+          "senha": {
+            "type": "string"
+          }
+        }
+      },
       "Marca": {
         "required": [
           "nome"
@@ -1254,6 +1269,41 @@
             "items": {
               "$ref": "#/components/schemas/InstrumentoResumoDTO"
             }
+          }
+        }
+      },
+      "RegisterDTO": {
+        "required": [
+          "nome",
+          "nomeUsuario",
+          "email",
+          "cpf",
+          "senha"
+        ],
+        "type": "object",
+        "properties": {
+          "nome": {
+            "maxLength": 100,
+            "minLength": 2,
+            "type": "string"
+          },
+          "nomeUsuario": {
+            "maxLength": 30,
+            "minLength": 3,
+            "type": "string"
+          },
+          "email": {
+            "maxLength": 150,
+            "minLength": 0,
+            "type": "string"
+          },
+          "cpf": {
+            "type": "string"
+          },
+          "senha": {
+            "maxLength": 72,
+            "minLength": 8,
+            "type": "string"
           }
         }
       },

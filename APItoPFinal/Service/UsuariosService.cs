@@ -1,7 +1,8 @@
 ﻿using APItoPFinal.DTOs;
+using APItoPFinal.Exceptions;
+using APItoPFinal.Helpers;
 using APItoPFinal.Models;
 using APItoPFinal.Repository;
-using APItoPFinal.Helpers;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
@@ -85,7 +86,7 @@ namespace APItoPFinal.Service
             catch (DbUpdateException ex) when (ex.InnerException is SqlException { Number: 2601 or 2627 })
             {
                 // duas requisições simultâneas passaram pela checagem acima: o índice único barrou
-                throw new Exception("CPF, E-mail ou nome de usuário já cadastrados.");
+                throw new ConflictException("CPF, E-mail ou nome de usuário já cadastrados.");
             }
 
             return ToDTO(usuario);
@@ -117,19 +118,31 @@ namespace APItoPFinal.Service
             }
             catch (DbUpdateException ex) when (ex.InnerException is SqlException { Number: 2601 or 2627 })
             {
-                throw new Exception("CPF, e-mail ou nome de usuário já cadastrado.");
+                throw new ConflictException("CPF, e-mail ou nome de usuário já cadastrado.");
             } 
         }
 
         public async Task DeletarUsuarios(Guid id)
         {
-            var usuarioExiste = await _repository.GetUsuariosById(id);
-            if (usuarioExiste == null)
+            var usuario = await _repository.GetUsuariosById(id);
+            if (usuario == null)
             {
-                throw new KeyNotFoundException("Usuário não encontrado");
+                throw new KeyNotFoundException("Usuário não encontrado.");
             }
 
-             _repository.DeleteUsuario(id);
+            if (await _repository.PossuiCompras(id))
+            {
+                throw new ConflictException("Não é possível excluir: este usuário possui compras registradas. Exclua as compras primeiro.");
+            }
+
+            try
+            {
+                _repository.DeleteUsuario(id);
+            }
+            catch (DbUpdateException ex) when (DbErros.ViolacaoDeFk(ex))
+            {
+                throw new ConflictException("Não é possível excluir: este usuário está em uso.");
+            }
         }
     }
 }

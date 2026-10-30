@@ -38,6 +38,10 @@ namespace APItoPFinal.Repository
         {
             return _context.Usuarios.FirstOrDefault(s => s.Senha == senha);
         }
+        public async Task<bool> PossuiCompras(Guid id)
+        {
+            return await _context.Compras.AnyAsync(c => c.UsuarioId == id);
+        }
         public async Task<Usuario> PostUsuarios(Usuario usuario)
         {
             usuario.Senha = BCrypt.Net.BCrypt.HashPassword(usuario.Senha);

@@ -89,7 +89,8 @@ namespace APItoPFinal.Migrations
 
                     b.Property<string>("Identificação")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Nome")
                         .IsRequired()
@@ -104,6 +105,9 @@ namespace APItoPFinal.Migrations
                     b.HasIndex("IdCategoria");
 
                     b.HasIndex("IdMarca");
+
+                    b.HasIndex("Identificação")
+                        .IsUnique();
 
                     b.ToTable("Instrumentos");
                 });
@@ -132,29 +136,43 @@ namespace APItoPFinal.Migrations
 
                     b.Property<string>("CPF")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(11)
+                        .HasColumnType("nvarchar(11)");
 
                     b.Property<string>("Cargo")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
 
                     b.Property<string>("Nome")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("NomeUsuario")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
                     b.Property<string>("Senha")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CPF")
+                        .IsUnique();
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("NomeUsuario")
+                        .IsUnique();
 
                     b.ToTable("Usuarios");
                 });
@@ -179,7 +197,7 @@ namespace APItoPFinal.Migrations
                     b.HasOne("APItoPFinal.Models.Usuario", "Usuario")
                         .WithMany()
                         .HasForeignKey("UsuarioId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Usuario");
@@ -190,13 +208,13 @@ namespace APItoPFinal.Migrations
                     b.HasOne("APItoPFinal.Models.Categoria", "Categoria")
                         .WithMany("Instrumentos")
                         .HasForeignKey("IdCategoria")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("APItoPFinal.Models.Marca", "Marca")
                         .WithMany("Instrumentos")
                         .HasForeignKey("IdMarca")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Categoria");
@@ -215,7 +233,7 @@ namespace APItoPFinal.Migrations
                     b.HasOne("APItoPFinal.Models.Instrumento", null)
                         .WithMany()
                         .HasForeignKey("InstrumentosId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 

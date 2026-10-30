@@ -1,6 +1,11 @@
 ﻿using APItoPFinal.DTOs;
+using APItoPFinal.Exceptions;
+using APItoPFinal.Helpers;
 using APItoPFinal.Models;
 using APItoPFinal.Repository;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace APItoPFinal.Service
 {
@@ -56,7 +61,18 @@ namespace APItoPFinal.Service
             {
                 throw new Exception("Marca não encontrada.");
             }
-            _repository.DeletarMarca(id);
+            if (_repository.PossuiInstrumentos(id))
+            {
+                throw new ConflictException("Não é possível excluir: esta marca possui instrumentos cadastrados.");
+            }
+            try
+            {
+                _repository.DeletarMarca(id);
+            }
+            catch(DbUpdateException ex) when (DbErros.ViolacaoDeFk(ex))
+            {
+                throw new ConflictException("Não é possível excluir: está marca ainda está em uso.");
+            }
         }
     }
 }

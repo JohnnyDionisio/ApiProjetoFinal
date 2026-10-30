@@ -6,8 +6,11 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using APItoPFinal.Settings;
+using APItoPFinal.Exceptions;
 
 var builder = WebApplication.CreateBuilder(args);
+
+app.UseExceptionHandler();
 
 // Add services to the container.
 
@@ -35,6 +38,9 @@ builder.Services.AddScoped<MarcaService>();
 
 builder.Services.AddScoped<UsuariosRepository>();
 builder.Services.AddScoped<UsuariosService>();
+
+builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 var jwt = builder.Configuration.GetSection("Jwt").Get<JwtSettings>() ?? new JwtSettings();
 

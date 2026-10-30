@@ -39,7 +39,24 @@ namespace APItoPFinal.Data
             {
                 e.Property(i => i.Identificação).HasMaxLength(50);
                 e.HasIndex(i => i.Identificação).IsUnique();
-            })
+                e.HasOne(i => i.Categoria).WithMany(c => c.Instrumentos).HasForeignKey(i => i.IdCategoria).OnDelete(DeleteBehavior.Restrict);
+                e.HasOne(i => i.Marca).WithMany(m => m.Instrumentos).HasForeignKey(i => i.IdMarca).OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<Compra>(e =>
+            {
+                e.HasOne(c => c.Usuario)
+                    .WithMany()
+                    .HasForeignKey(c => c.UsuarioId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                e.HasMany(c => c.Instrumentos)
+                    .WithMany(i => i.Compras)   // <- o "i => i.Compras" é obrigatório aqui
+                    .UsingEntity<Dictionary<string, object>>(
+                        "CompraInstrumento",
+                        j => j.HasOne<Instrumento>().WithMany().HasForeignKey("InstrumentosId").OnDelete(DeleteBehavior.Restrict),
+                        j => j.HasOne<Compra>().WithMany().HasForeignKey("ComprasId").OnDelete(DeleteBehavior.Cascade));
+            });
         }
     }
 }

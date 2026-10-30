@@ -1,12 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using APItoPFinal.Data;
-using APItoPFinal.DTOs;
+﻿using APItoPFinal.DTOs;
+using APItoPFinal.Exceptions;
 using APItoPFinal.Models;
 using APItoPFinal.Service;
-using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace APItoPFinal.Controllers
 {
@@ -32,12 +29,10 @@ namespace APItoPFinal.Controllers
         public async Task<ActionResult<InstrumentoDTO>> GetInstrumentosById(Guid id)
         {
             var instrumento = await _service.GetInstrumentoDTOById(id);
-
             if (instrumento == null)
             {
-                return NotFound();
+                throw new NotFoundException("Instrumento não encontrado.");
             }
-
             return instrumento;
         }
 
@@ -56,22 +51,10 @@ namespace APItoPFinal.Controllers
         {
             if (id != instrumento.Id)
             {
-                return BadRequest();
+                throw new BadRequestException("O ID da URL não confere com o objeto.");
             }
 
-            try
-            {
-                await _service.AtualizarInstrumento(instrumento);
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                throw;
-            }
-
+            await _service.AtualizarInstrumento(instrumento);
             return NoContent();
         }
 
@@ -79,12 +62,6 @@ namespace APItoPFinal.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteInstrumento(Guid id)
         {
-            var instrumento = await _service.GetInstrumentosById(id);
-            if (instrumento == null)
-            {
-                return NotFound();
-            }
-
             await _service.DeletarInstrumento(id);
             return NoContent();
         }

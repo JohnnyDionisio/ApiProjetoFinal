@@ -9,7 +9,7 @@
     "Parameters": [
       {
         "Name": "dados",
-        "Type": "APItoPFinal.Models.Usuario",
+        "Type": "APItoPFinal.DTOs.LoginDTO",
         "IsRequired": true
       }
     ],
@@ -470,8 +470,8 @@
     "Order": 0,
     "Parameters": [
       {
-        "Name": "usuario",
-        "Type": "APItoPFinal.Models.Usuario",
+        "Name": "dto",
+        "Type": "APItoPFinal.DTOs.RegisterDTO",
         "IsRequired": true
       }
     ],

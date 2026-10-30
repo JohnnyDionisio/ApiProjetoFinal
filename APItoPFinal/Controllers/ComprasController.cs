@@ -1,9 +1,10 @@
-﻿using APItoPFinal.DTOs;
+﻿using System.Security.Claims;
+using APItoPFinal.DTOs;
+using APItoPFinal.Exceptions;
 using APItoPFinal.Models;
 using APItoPFinal.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace APItoPFinal.Controllers
 {
@@ -21,84 +22,50 @@ namespace APItoPFinal.Controllers
 
         private Guid GetUsuarioLogadoId()
         {
-            var idTexto = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            return Guid.Parse(idTexto);
+            return Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         }
-        
+
         private bool IsAdmin() => User.IsInRole("Admin");
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Compra>>> GetCompras()
         {
-            var compras = await _service.GetCompras(GetUsuarioLogadoId(), IsAdmin());
-            return Ok(compras);
+            return Ok(await _service.GetCompras(GetUsuarioLogadoId(), IsAdmin()));
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Compra>> GetComprasById(Guid id)
+        public async Task<ActionResult<CompraDTO>> GetComprasById(Guid id)
         {
-            try
+            var compra = await _service.GetComprasDTOById(id, GetUsuarioLogadoId(), IsAdmin());
+            if (compra == null)
             {
-                var compra = await _service.GetComprasDTOById(id, GetUsuarioLogadoId(), IsAdmin());
-                if(compra == null)
-                {
-                    return NotFound("Compra não encontrada.");
-                }
-                return Ok(compra);
+                throw new NotFoundException("Compra não encontrada.");
             }
-            catch (UnauthorizedAccessException ex)
-            {
-                return Forbid();
-            }
+            return Ok(compra);
         }
 
         [HttpPost]
         public async Task<ActionResult> PostCompras(CompraInputDTO input)
         {
-            try
-            {
-            var id = await _service.AdicionarCompra(input, GetUsuarioLogadoId());
-            var compraCriada = await _service.GetComprasDTOById(id, GetUsuarioLogadoId(), IsAdmin());
+            var usuarioId = GetUsuarioLogadoId();
+            var id = await _service.AdicionarCompra(input, usuarioId);
+            var compraCriada = await _service.GetComprasDTOById(id, usuarioId, IsAdmin());
             return Created($"/api/compras/{id}", compraCriada);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
         }
 
         [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<ActionResult> PutCompras(Guid id, CompraInputDTO input)
         {
-            try
-            {
-                await _service.AtualizarCompra(id, input);
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            await _service.AtualizarCompra(id, input);
+            return NoContent();
         }
-
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteCompras(Guid id)
         {
-            try
-            {
-                await _service.DeletarCompra(id, GetUsuarioLogadoId(), IsAdmin());
-                return NoContent();
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return Forbid();
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
+            await _service.DeletarCompra(id, GetUsuarioLogadoId(), IsAdmin());
+            return NoContent();
         }
     }
 }

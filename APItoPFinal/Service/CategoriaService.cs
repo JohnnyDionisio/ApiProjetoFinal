@@ -1,6 +1,9 @@
 ﻿using APItoPFinal.DTOs;
 using APItoPFinal.Models;
 using APItoPFinal.Repository;
+using APItoPFinal.Exceptions;
+using APItoPFinal.Helpers;
+using Microsoft.EntityFrameworkCore;
 
 namespace APItoPFinal.Service
 {
@@ -32,7 +35,7 @@ namespace APItoPFinal.Service
             var categoriaExiste = _repository.GetCategoriaById(categoria.Id);
             if (categoriaExiste != null)
             {
-                throw new Exception("Categoria já existe.");
+                throw new ConflictException("Categoria já existe.");
             }
             categoria.Id = Guid.NewGuid();
             _repository.AdicionarCategoria(categoria);
@@ -42,7 +45,7 @@ namespace APItoPFinal.Service
             var categoriaExiste = _repository.GetCategoriaById(categoria.Id);
             if (categoriaExiste == null)
             {
-                throw new Exception("Categoria não encontrada.");
+                throw new NotFoundException("Categoria não encontrada.");
             }
             categoriaExiste.Nome = categoria.Nome;
             _repository.AtualizarCategoria(categoria.Id, categoriaExiste);
@@ -52,9 +55,20 @@ namespace APItoPFinal.Service
             var categoriaExiste = _repository.GetCategoriaById(id);
             if (categoriaExiste == null)
             {
-                throw new Exception("Categoria não encontrada.");
+                throw new NotFoundException("Categoria não encontrada.");
             }
-            _repository.DeletarCategoria(id);
+            if (_repository.PossuiInstrumento(id))
+            {
+                throw new ConflictException("Não é possível excluir: essa categoria possui instrumentos cadastrados");
+            }
+            try
+            {
+                _repository.DeletarCategoria(id);
+            }
+            catch (DbUpdateException ex) when (DbErros.ViolacaoDeFk(ex)) 
+            {
+                throw new ConflictException("Não é possível excluir: esta categoria ainda está em uso.");
+            }
         }
     }
 }

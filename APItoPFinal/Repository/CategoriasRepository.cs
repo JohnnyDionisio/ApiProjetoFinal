@@ -48,6 +48,11 @@ namespace APItoPFinal.Repository
                 .FirstOrDefaultAsync();
         }
 
+        public bool PossuiInstrumento(Guid id)
+        {
+            return _context.Instrumentos.Any(i => i.Id == id);
+        }
+
         public void AdicionarCategoria(Categoria categoria)
         {
             _context.Categorias.Add(categoria);

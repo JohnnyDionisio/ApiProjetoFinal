@@ -46,7 +46,10 @@ namespace APItoPFinal.Repository
                 })
                 .FirstOrDefaultAsync();
         }
-
+        public bool PossuiInstrumentos(Guid id)
+        {
+            return _context.Instrumentos.Any(i => i.IdMarca == id);
+        }
         public void AdicionarMarca(Marca marca)
         {
             _context.Marcas.Add(marca);
