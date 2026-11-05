@@ -31,6 +31,9 @@ namespace APItoPFinal.Repository
                 CPF = c.CPF,
                 DataCompra = c.DataCompra,
                 UsuarioId = c.UsuarioId,
+                ValorTotal = c.ValorTotal,
+                Status = c.Status,
+                DataCancelamento = c.DataCancelamento,
                 Instrumentos = c.Instrumentos.Select(i => new InstrumentoResumoDTO
                 {
                     Id = i.Id,

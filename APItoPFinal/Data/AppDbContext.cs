@@ -41,6 +41,7 @@ namespace APItoPFinal.Data
                 e.HasIndex(i => i.Identificação).IsUnique();
                 e.HasOne(i => i.Categoria).WithMany(c => c.Instrumentos).HasForeignKey(i => i.IdCategoria).OnDelete(DeleteBehavior.Restrict);
                 e.HasOne(i => i.Marca).WithMany(m => m.Instrumentos).HasForeignKey(i => i.IdMarca).OnDelete(DeleteBehavior.Restrict);
+                e.Property(i => i.Preco).HasPrecision(18, 2); // Define a precisão do campo Preco como decimal(18,2)
             });
 
             modelBuilder.Entity<Compra>(e =>
@@ -56,6 +57,7 @@ namespace APItoPFinal.Data
                         "CompraInstrumento",
                         j => j.HasOne<Instrumento>().WithMany().HasForeignKey("InstrumentosId").OnDelete(DeleteBehavior.Restrict),
                         j => j.HasOne<Compra>().WithMany().HasForeignKey("ComprasId").OnDelete(DeleteBehavior.Cascade));
+                e.Property(c => c.ValorTotal).HasPrecision(18, 2); // Define a precisão do campo ValorTotal como decimal(18,2)
             });
         }
     }

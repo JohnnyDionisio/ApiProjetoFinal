@@ -17,6 +17,12 @@ namespace APItoPFinal.Models
 
         public DateTime DataCompra { get; set; } = DateTime.Now;
 
+        public Decimal ValorTotal { get; set; }
+
+        public StatusCompra Status { get; set; } = StatusCompra.Ativa;
+
+        public DateTime? DataCancelamento { get; set; }
+
         public Guid UsuarioId { get; set; }
 
         [JsonIgnore]

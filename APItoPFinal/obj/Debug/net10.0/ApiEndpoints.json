@@ -176,7 +176,7 @@
     ],
     "ReturnTypes": [
       {
-        "Type": "APItoPFinal.Models.Compra",
+        "Type": "APItoPFinal.DTOs.CompraDTO",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -212,6 +212,22 @@
     "Method": "DeleteCompras",
     "RelativePath": "api/Compras/{id}",
     "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "APItoPFinal.Controllers.ComprasController",
+    "Method": "CancelarCompra",
+    "RelativePath": "api/Compras/{id}/cancelar",
+    "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
@@ -342,7 +358,7 @@
     "Parameters": [],
     "ReturnTypes": [
       {
-        "Type": "APItoPFinal.Models.Marca",
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[APItoPFinal.Models.Marca, APItoPFinal, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -451,7 +467,7 @@
     "Parameters": [],
     "ReturnTypes": [
       {
-        "Type": "System.Collections.Generic.IEnumerable\u00601[[APItoPFinal.Models.Usuario, APItoPFinal, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "System.Collections.Generic.List\u00601[[APItoPFinal.DTOs.UsuarioDTO, APItoPFinal, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -503,7 +519,7 @@
     ],
     "ReturnTypes": [
       {
-        "Type": "APItoPFinal.Models.Usuario",
+        "Type": "APItoPFinal.DTOs.UsuarioDTO",
         "MediaTypes": [
           "text/plain",
           "application/json",

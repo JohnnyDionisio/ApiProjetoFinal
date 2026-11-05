@@ -61,10 +61,18 @@ namespace APItoPFinal.Controllers
             return NoContent();
         }
 
+        [HttpPost("{id}/cancelar")]
+        public async Task<IActionResult> CancelarCompra(Guid id)
+        {
+            await _service.CancelarCompra(id, GetUsuarioLogadoId(), IsAdmin());
+            return NoContent();
+        }
+
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteCompras(Guid id)
         {
-            await _service.DeletarCompra(id, GetUsuarioLogadoId(), IsAdmin());
+            await _service.DeletarCompra(id);
             return NoContent();
         }
     }
