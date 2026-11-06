@@ -619,6 +619,27 @@
   },
   {
     "ContainingType": "APItoPFinal.Controllers.UsuariosController",
+    "Method": "AlterarCargo",
+    "RelativePath": "api/Usuarios/{id}/cargo",
+    "HttpMethod": "PATCH",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "APItoPFinal.DTOs.AlterarCargoDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "APItoPFinal.Controllers.UsuariosController",
     "Method": "GetMe",
     "RelativePath": "api/Usuarios/me",
     "HttpMethod": "GET",
@@ -636,5 +657,37 @@
         "StatusCode": 200
       }
     ]
+  },
+  {
+    "ContainingType": "APItoPFinal.Controllers.UsuariosController",
+    "Method": "PutMe",
+    "RelativePath": "api/Usuarios/me",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "APItoPFinal.DTOs.PerfilUpdateDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "APItoPFinal.Controllers.UsuariosController",
+    "Method": "AlterarMinhaSenha",
+    "RelativePath": "api/Usuarios/me/senha",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "APItoPFinal.DTOs.AlterarSenhaDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
   }
 ]

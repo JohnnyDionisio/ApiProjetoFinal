@@ -11,6 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using System.Text;
 using System.Text.Json.Serialization;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -83,6 +84,30 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         {
             Console.WriteLine($"[JWT] Falha na validação: {context.Exception.Message}");
             return Task.CompletedTask;
+        },
+        OnTokenValidated = async context =>
+        {
+            var idTexto = context.Principal?.FindFirstValue(ClaimTypes.NameIdentifier);
+            var cargoDoToken = context.Principal?.FindFirstValue(ClaimTypes.Role);
+
+            if (!Guid.TryParse(idTexto, out var usuarioId))
+            {
+                context.Fail("Token inválido.");
+                return;
+            }
+
+            var db = context.HttpContext.RequestServices.GetRequiredService<AppDbContext>();
+            var cargoAtual = await db.Usuarios
+                .AsNoTracking()
+                .Where(u => u.Id == usuarioId)
+                .Select(u => u.Cargo)
+                .FirstOrDefaultAsync();
+
+            // usuário apagado ou cargo diferente do que está no token: exige novo login
+            if (cargoAtual == null || cargoAtual != cargoDoToken)
+            {
+                context.Fail("Usuário removido ou cargo alterado. Faça login novamente.");
+            }
         }
     };
 });
@@ -90,6 +115,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
+
+await AdminSeeder.SeedAsync(app.Services);
 
 app.UseExceptionHandler();
 

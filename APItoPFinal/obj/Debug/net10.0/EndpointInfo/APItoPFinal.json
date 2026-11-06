@@ -1126,6 +1126,41 @@
             "Bearer": [ ]
           }
         ]
+      },
+      "put": {
+        "tags": [
+          "Usuarios"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PerfilUpdateDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PerfilUpdateDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/PerfilUpdateDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
       }
     },
     "/api/Usuarios/{id}": {
@@ -1244,10 +1279,123 @@
           }
         ]
       }
+    },
+    "/api/Usuarios/me/senha": {
+      "put": {
+        "tags": [
+          "Usuarios"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlterarSenhaDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlterarSenhaDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlterarSenhaDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/Usuarios/{id}/cargo": {
+      "patch": {
+        "tags": [
+          "Usuarios"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlterarCargoDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlterarCargoDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlterarCargoDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
     }
   },
   "components": {
     "schemas": {
+      "AlterarCargoDTO": {
+        "required": [
+          "cargo"
+        ],
+        "type": "object",
+        "properties": {
+          "cargo": {
+            "type": "string"
+          }
+        }
+      },
+      "AlterarSenhaDTO": {
+        "required": [
+          "senhaAtual",
+          "novaSenha"
+        ],
+        "type": "object",
+        "properties": {
+          "senhaAtual": {
+            "type": "string"
+          },
+          "novaSenha": {
+            "maxLength": 72,
+            "minLength": 8,
+            "type": "string"
+          }
+        }
+      },
       "Categoria": {
         "required": [
           "nome"
@@ -1641,6 +1789,31 @@
               "string"
             ],
             "format": "int32"
+          }
+        }
+      },
+      "PerfilUpdateDTO": {
+        "required": [
+          "nome",
+          "nomeUsuario",
+          "email"
+        ],
+        "type": "object",
+        "properties": {
+          "nome": {
+            "maxLength": 100,
+            "minLength": 3,
+            "type": "string"
+          },
+          "nomeUsuario": {
+            "maxLength": 30,
+            "minLength": 3,
+            "type": "string"
+          },
+          "email": {
+            "maxLength": 150,
+            "minLength": 0,
+            "type": "string"
           }
         }
       },

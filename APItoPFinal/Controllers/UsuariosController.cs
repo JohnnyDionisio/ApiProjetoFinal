@@ -74,6 +74,28 @@ namespace APItoPFinal.Controllers
             return NoContent();
         }
 
+        [HttpPut("me")]
+        public async Task<IActionResult> PutMe(PerfilUpdateDTO dto)
+        {
+            await _service.AtualizarPerfil(GetUsuarioLogadoId(), dto);
+            return NoContent();
+        }
+
+        [HttpPut("me/senha")]
+        public async Task<IActionResult> AlterarMinhaSenha(AlterarSenhaDTO dto)
+        {
+            await _service.AlterarSenha(GetUsuarioLogadoId(), dto);
+            return NoContent();
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPatch("{id}/cargo")]
+        public async Task<IActionResult> AlterarCargo(Guid id, AlterarCargoDTO dto)
+        {
+            await _service.AlterarCargo(id, dto.Cargo, GetUsuarioLogadoId());
+            return NoContent();
+        }
+
         [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUsuarios(Guid id)

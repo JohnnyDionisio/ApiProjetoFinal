@@ -122,6 +122,69 @@ namespace APItoPFinal.Service
             } 
         }
 
+        public async Task AtualizarPerfil(Guid id, PerfilUpdateDTO dto)
+        {
+            var usuario = await _repository.GetUsuariosById(id);
+            if (usuario == null)
+            {
+                throw new NotFoundException("Usuário não encontrado.");
+            }
+
+            // reaproveita as regras do AtualizarUsuarios (unicidade, normalização), mantendo o CPF atual
+            await AtualizarUsuarios(id, new UsuarioAtualizadoDTO
+            {
+                Nome = dto.Nome,
+                NomeUsuario = dto.NomeUsuario,
+                Email = dto.Email,
+                CPF = usuario.CPF
+            });
+        }
+
+        public async Task AlterarSenha(Guid id, AlterarSenhaDTO dto)
+        {
+            var usuario = await _repository.GetUsuariosById(id);
+            if (usuario == null)
+            {
+                throw new NotFoundException("Usuário não encontrado.");
+            }
+
+            if (!BCrypt.Net.BCrypt.Verify(dto.SenhaAtual, usuario.Senha))
+            {
+                throw new BadRequestException("Senha atual incorreta.");
+            }
+
+            if (dto.SenhaAtual == dto.NovaSenha)
+            {
+                throw new BadRequestException("A nova senha deve ser diferente da atual.");
+            }
+
+            usuario.Senha = BCrypt.Net.BCrypt.HashPassword(dto.NovaSenha);
+            await _repository.PutUsuarios(id, usuario);
+        }
+
+        public async Task AlterarCargo(Guid id, string cargo, Guid usuarioLogadoId)
+        {
+            var cargoValido = Cargos.Todos.FirstOrDefault(c => c.Equals(cargo?.Trim(), StringComparison.OrdinalIgnoreCase));
+            if (cargoValido == null)
+            {
+                throw new BadRequestException($"Cargo inválido. Valores aceitos: {string.Join(", ", Cargos.Todos)}.");
+            }
+
+            if (id == usuarioLogadoId)
+            {
+                throw new BadRequestException("Você não pode alterar o seu próprio cargo. Peça a outro Admin.");
+            }
+
+            var usuario = await _repository.GetUsuariosById(id);
+            if (usuario == null)
+            {
+                throw new NotFoundException("Usuário não encontrado.");
+            }
+
+            usuario.Cargo = cargoValido;
+            await _repository.PutUsuarios(id, usuario);
+        }
+
         public async Task DeletarUsuarios(Guid id)
         {
             var usuario = await _repository.GetUsuariosById(id);
