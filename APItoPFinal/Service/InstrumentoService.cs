@@ -18,15 +18,29 @@ namespace APItoPFinal.Service
             _repository = repository;
         }
 
-        public async Task<List<InstrumentoDTO>> GetInstrumentos()
+        public async Task<PaginadoDTO<InstrumentoDTO>> GetInstrumentos(InstrumentoFiltroDTO filtro)
         {
-            return await _repository.GetAllAsync();
+            if (filtro.PrecoMin.HasValue && filtro.PrecoMax.HasValue && filtro.PrecoMin > filtro.PrecoMax)
+            {
+                throw new BadRequestException("O preço mínimo não pode ser maior que o preço máximo.");
+            }
+
+            var (itens, total) = await _repository.BuscarAsync(filtro);
+
+            return new PaginadoDTO<InstrumentoDTO>
+            {
+                Itens = itens,
+                Pagina = filtro.Pagina,
+                Tamanho = filtro.Tamanho,
+                TotalItens = total,
+                TotalPaginas = (int)Math.Ceiling(total / (double)filtro.Tamanho)
+            };
         }
 
         // Para o Controller (GET por id) - devolve DTO
         public async Task<InstrumentoDTO?> GetInstrumentoDTOById(Guid id)
         {
-            return await _repository.GetByIdDTOAsync(id);   
+            return await _repository.GetByIdDTOAsync(id);
         }
 
         // Uso interno (validações) - devolve entidade completa
@@ -83,7 +97,7 @@ namespace APItoPFinal.Service
             {
                 throw new NotFoundException("Instrumento não encontrado.");
             }
-            if(_repository.EstaEmCompra(id))
+            if (_repository.EstaEmCompra(id))
             {
                 throw new ConflictException("Não é possível excluir: este instrumento faz parte de uma ou mais compras.");
             }
@@ -91,7 +105,7 @@ namespace APItoPFinal.Service
             {
                 _repository.DeletarInstrumento(id);
             }
-            catch(DbUpdateException ex) when (DbErros.ViolacaoDeFk(ex))
+            catch (DbUpdateException ex) when (DbErros.ViolacaoDeFk(ex))
             {
                 throw new ConflictException("Não é possível excluir: este instrumento está em uso");
             }

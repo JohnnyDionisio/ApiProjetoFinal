@@ -20,9 +20,9 @@ namespace APItoPFinal.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<InstrumentoDTO>>> GetInstrumentos()
+        public async Task<ActionResult<PaginadoDTO<InstrumentoDTO>>> GetInstrumentos([FromQuery] InstrumentoFiltroDTO filtro)
         {
-            return await _service.GetInstrumentos();
+            return await _service.GetInstrumentos(filtro);
         }
 
         [HttpGet("{id}")]

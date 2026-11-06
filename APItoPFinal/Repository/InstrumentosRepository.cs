@@ -1,7 +1,6 @@
 ﻿using APItoPFinal.Data;
 using APItoPFinal.DTOs;
 using APItoPFinal.Models;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
 namespace APItoPFinal.Repository
@@ -15,11 +14,42 @@ namespace APItoPFinal.Repository
             _context = context;
         }
 
-        public async Task<List<InstrumentoDTO>> GetAllAsync()
+        public async Task<(List<InstrumentoDTO> Itens, int Total)> BuscarAsync(InstrumentoFiltroDTO f)
         {
-            return await _context.Instrumentos
-                .Include(i => i.Categoria)
-                .Include(i => i.Marca)
+            var query = _context.Instrumentos.AsNoTracking().AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(f.Busca))
+            {
+                var termo = f.Busca.Trim();
+                query = query.Where(i => i.Nome.Contains(termo)
+                                      || i.Descricao.Contains(termo)
+                                      || i.Identificação.Contains(termo));
+            }
+
+            if (f.CategoriaId.HasValue) query = query.Where(i => i.IdCategoria == f.CategoriaId.Value);
+            if (f.MarcaId.HasValue) query = query.Where(i => i.IdMarca == f.MarcaId.Value);
+            if (f.PrecoMin.HasValue) query = query.Where(i => i.Preco >= f.PrecoMin.Value);
+            if (f.PrecoMax.HasValue) query = query.Where(i => i.Preco <= f.PrecoMax.Value);
+            if (f.Disponivel.HasValue) query = query.Where(i => i.Disponibilidade == f.Disponivel.Value);
+
+            var total = await query.CountAsync();
+
+            var campo = (f.OrdenarPor ?? "nome").ToLowerInvariant().Replace('ç', 'c');
+
+            IOrderedQueryable<Instrumento> ordenada = (campo, f.Decrescente) switch
+            {
+                ("preco", false) => query.OrderBy(i => i.Preco),
+                ("preco", true) => query.OrderByDescending(i => i.Preco),
+                (_, true) => query.OrderByDescending(i => i.Nome),
+                _ => query.OrderBy(i => i.Nome)
+            };
+
+            // desempate por Id: sem isso, itens com o mesmo nome/preço podem repetir ou sumir entre páginas
+            ordenada = ordenada.ThenBy(i => i.Id);
+
+            var itens = await ordenada
+                .Skip((f.Pagina - 1) * f.Tamanho)
+                .Take(f.Tamanho)
                 .Select(i => new InstrumentoDTO
                 {
                     Id = i.Id,
@@ -32,6 +62,8 @@ namespace APItoPFinal.Repository
                     Marca = i.Marca.Nome
                 })
                 .ToListAsync();
+
+            return (itens, total);
         }
 
         // Usado só internamente (validações, update, delete) - entidade completa
