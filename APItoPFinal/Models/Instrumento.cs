@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace APItoPFinal.Models
 {
@@ -22,7 +23,9 @@ namespace APItoPFinal.Models
         [StringLength(100, ErrorMessage = "O campo Descrição deve ter no máximo 100 caracteres.")]
         public string Descricao { get; set; }
 
-        public bool Disponibilidade { get; set; } = true;
+        [Range(0, 1000000, ErrorMessage = "O Estoque deve ser zero ou maior.")]
+        public int Estoque { get; set; }
+
 
         public Guid IdCategoria { get; set; }
         [ForeignKey("IdCategoria")]
@@ -32,6 +35,8 @@ namespace APItoPFinal.Models
         [ForeignKey("IdMarca")]
         public Marca? Marca { get; set; }
 
-        public ICollection<Compra>? Compras { get; set; } = new List<Compra>();
+        [Timestamp]
+        [JsonIgnore]
+        public byte[] RowVersion { get; set; } = Array.Empty<byte>();
     }
 }

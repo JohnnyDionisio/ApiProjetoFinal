@@ -508,5 +508,5 @@ C:\Users\Usuario\Desktop\Programações\APIF\ApiProjetoFinal\APItoPFinal\obj\Deb
 C:\Users\Usuario\Desktop\Programações\APIF\ApiProjetoFinal\APItoPFinal\obj\Debug\net10.0\APItoPFinal.pdb
 C:\Users\Usuario\Desktop\Programações\APIF\ApiProjetoFinal\APItoPFinal\obj\Debug\net10.0\APItoPFinal.genruntimeconfig.cache
 C:\Users\Usuario\Desktop\Programações\APIF\ApiProjetoFinal\APItoPFinal\obj\Debug\net10.0\ref\APItoPFinal.dll
-C:\Users\Usuario\Desktop\Programações\APIF\ApiProjetoFinal\APItoPFinal\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt
 C:\Users\53362182860\Desktop\Programações\C#\APItoPFinal\APItoPFinal\bin\Debug\net10.0\Scalar.AspNetCore.dll
+C:\Users\Usuario\Desktop\Programações\APIF\ApiProjetoFinal\APItoPFinal\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt

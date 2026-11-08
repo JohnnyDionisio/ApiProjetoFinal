@@ -18,6 +18,8 @@ namespace APItoPFinal.Data
 
         public DbSet<Usuario> Usuarios { get; set; }
 
+        public DbSet<CompraItem> CompraItens { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -42,6 +44,7 @@ namespace APItoPFinal.Data
                 e.HasOne(i => i.Categoria).WithMany(c => c.Instrumentos).HasForeignKey(i => i.IdCategoria).OnDelete(DeleteBehavior.Restrict);
                 e.HasOne(i => i.Marca).WithMany(m => m.Instrumentos).HasForeignKey(i => i.IdMarca).OnDelete(DeleteBehavior.Restrict);
                 e.Property(i => i.Preco).HasPrecision(18, 2); // Define a precisão do campo Preco como decimal(18,2)
+                e.ToTable(t => t.HasCheckConstraint("CK_Instrumentos_Estoque", "[Estoque] >= 0"));
             });
 
             modelBuilder.Entity<Compra>(e =>
@@ -51,13 +54,29 @@ namespace APItoPFinal.Data
                     .HasForeignKey(c => c.UsuarioId)
                     .OnDelete(DeleteBehavior.Restrict);
 
-                e.HasMany(c => c.Instrumentos)
-                    .WithMany(i => i.Compras)   // <- o "i => i.Compras" é obrigatório aqui
-                    .UsingEntity<Dictionary<string, object>>(
-                        "CompraInstrumento",
-                        j => j.HasOne<Instrumento>().WithMany().HasForeignKey("InstrumentosId").OnDelete(DeleteBehavior.Restrict),
-                        j => j.HasOne<Compra>().WithMany().HasForeignKey("ComprasId").OnDelete(DeleteBehavior.Cascade));
                 e.Property(c => c.ValorTotal).HasPrecision(18, 2); // Define a precisão do campo ValorTotal como decimal(18,2)
+            });
+
+            modelBuilder.Entity<CompraItem>(e =>
+            {
+                // a chave é o par compra + instrumento: o mesmo instrumento aparece uma vez por compra, com a quantidade
+                e.HasKey(ci => new { ci.CompraId, ci.InstrumentoId });
+
+                e.Property(ci => ci.PrecoUnitario).HasPrecision(18, 2);
+
+                // apagar uma compra apaga os itens dela
+                e.HasOne(ci => ci.Compra)
+                    .WithMany(c => c.Itens)
+                    .HasForeignKey(ci => ci.CompraId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                // mas não dá para apagar um instrumento que já está em alguma compra (histórico)
+                e.HasOne(ci => ci.Instrumento)
+                    .WithMany()
+                    .HasForeignKey(ci => ci.InstrumentoId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                e.ToTable(t => t.HasCheckConstraint("CK_CompraItens_Quantidade", "[Quantidade] > 0"));
             });
         }
     }

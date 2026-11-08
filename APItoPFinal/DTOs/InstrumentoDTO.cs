@@ -7,7 +7,8 @@
         public string Nome { get; set; }
         public decimal Preco { get; set; }
         public string Descricao { get; set; }
-        public bool Disponibilidade { get; set; }
+        public int Estoque { get; set; }
+        public bool Disponibilidade => Estoque > 0;
         public string Categoria { get; set; }
         public string Marca { get; set; }
     }

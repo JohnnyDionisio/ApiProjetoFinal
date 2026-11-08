@@ -77,6 +77,31 @@ namespace APItoPFinal.Migrations
                     b.ToTable("Compras");
                 });
 
+            modelBuilder.Entity("APItoPFinal.Models.CompraItem", b =>
+                {
+                    b.Property<Guid>("CompraId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("InstrumentoId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("PrecoUnitario")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Quantidade")
+                        .HasColumnType("int");
+
+                    b.HasKey("CompraId", "InstrumentoId");
+
+                    b.HasIndex("InstrumentoId");
+
+                    b.ToTable("CompraItens", t =>
+                        {
+                            t.HasCheckConstraint("CK_CompraItens_Quantidade", "[Quantidade] > 0");
+                        });
+                });
+
             modelBuilder.Entity("APItoPFinal.Models.Instrumento", b =>
                 {
                     b.Property<Guid>("Id")
@@ -88,8 +113,8 @@ namespace APItoPFinal.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<bool>("Disponibilidade")
-                        .HasColumnType("bit");
+                    b.Property<int>("Estoque")
+                        .HasColumnType("int");
 
                     b.Property<Guid>("IdCategoria")
                         .HasColumnType("uniqueidentifier");
@@ -111,6 +136,12 @@ namespace APItoPFinal.Migrations
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
                     b.HasKey("Id");
 
                     b.HasIndex("IdCategoria");
@@ -120,7 +151,10 @@ namespace APItoPFinal.Migrations
                     b.HasIndex("Identificação")
                         .IsUnique();
 
-                    b.ToTable("Instrumentos");
+                    b.ToTable("Instrumentos", t =>
+                        {
+                            t.HasCheckConstraint("CK_Instrumentos_Estoque", "[Estoque] >= 0");
+                        });
                 });
 
             modelBuilder.Entity("APItoPFinal.Models.Marca", b =>
@@ -188,21 +222,6 @@ namespace APItoPFinal.Migrations
                     b.ToTable("Usuarios");
                 });
 
-            modelBuilder.Entity("CompraInstrumento", b =>
-                {
-                    b.Property<Guid>("ComprasId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("InstrumentosId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("ComprasId", "InstrumentosId");
-
-                    b.HasIndex("InstrumentosId");
-
-                    b.ToTable("CompraInstrumento");
-                });
-
             modelBuilder.Entity("APItoPFinal.Models.Compra", b =>
                 {
                     b.HasOne("APItoPFinal.Models.Usuario", "Usuario")
@@ -212,6 +231,25 @@ namespace APItoPFinal.Migrations
                         .IsRequired();
 
                     b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("APItoPFinal.Models.CompraItem", b =>
+                {
+                    b.HasOne("APItoPFinal.Models.Compra", "Compra")
+                        .WithMany("Itens")
+                        .HasForeignKey("CompraId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("APItoPFinal.Models.Instrumento", "Instrumento")
+                        .WithMany()
+                        .HasForeignKey("InstrumentoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Compra");
+
+                    b.Navigation("Instrumento");
                 });
 
             modelBuilder.Entity("APItoPFinal.Models.Instrumento", b =>
@@ -233,24 +271,14 @@ namespace APItoPFinal.Migrations
                     b.Navigation("Marca");
                 });
 
-            modelBuilder.Entity("CompraInstrumento", b =>
-                {
-                    b.HasOne("APItoPFinal.Models.Compra", null)
-                        .WithMany()
-                        .HasForeignKey("ComprasId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("APItoPFinal.Models.Instrumento", null)
-                        .WithMany()
-                        .HasForeignKey("InstrumentosId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("APItoPFinal.Models.Categoria", b =>
                 {
                     b.Navigation("Instrumentos");
+                });
+
+            modelBuilder.Entity("APItoPFinal.Models.Compra", b =>
+                {
+                    b.Navigation("Itens");
                 });
 
             modelBuilder.Entity("APItoPFinal.Models.Marca", b =>

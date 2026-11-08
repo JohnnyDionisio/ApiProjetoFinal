@@ -30,7 +30,13 @@ namespace APItoPFinal.Repository
             if (f.MarcaId.HasValue) query = query.Where(i => i.IdMarca == f.MarcaId.Value);
             if (f.PrecoMin.HasValue) query = query.Where(i => i.Preco >= f.PrecoMin.Value);
             if (f.PrecoMax.HasValue) query = query.Where(i => i.Preco <= f.PrecoMax.Value);
-            if (f.Disponivel.HasValue) query = query.Where(i => i.Disponibilidade == f.Disponivel.Value);
+
+            if (f.Disponivel.HasValue)
+            {
+                query = f.Disponivel.Value
+                    ? query.Where(i => i.Estoque > 0)
+                    : query.Where(i => i.Estoque == 0);
+            }
 
             var total = await query.CountAsync();
 
@@ -57,7 +63,7 @@ namespace APItoPFinal.Repository
                     Nome = i.Nome,
                     Preco = i.Preco,
                     Descricao = i.Descricao,
-                    Disponibilidade = i.Disponibilidade,
+                    Estoque = i.Estoque,
                     Categoria = i.Categoria.Nome,
                     Marca = i.Marca.Nome
                 })
@@ -66,13 +72,23 @@ namespace APItoPFinal.Repository
             return (itens, total);
         }
 
-        // Usado só internamente (validações, update, delete) - entidade completa
+        // Usado só internamente (validações, update, delete) - entidade completa, rastreada
         public async Task<Instrumento> GetByIdAsync(Guid id)
         {
             return await _context.Instrumentos
                 .Include(i => i.Categoria)
                 .Include(i => i.Marca)
                 .FirstOrDefaultAsync(i => i.Id == id);
+        }
+
+        // Vários de uma vez, sem rastreamento: usado ao montar uma compra (nome, preço, estoque atual)
+        public async Task<List<Instrumento>> GetByIdsAsync(IEnumerable<Guid> ids)
+        {
+            var lista = ids.ToList();
+            return await _context.Instrumentos
+                .AsNoTracking()
+                .Where(i => lista.Contains(i.Id))
+                .ToListAsync();
         }
 
         // Usado pelo Controller no GET por id - já devolve o DTO
@@ -89,7 +105,7 @@ namespace APItoPFinal.Repository
                     Nome = i.Nome,
                     Preco = i.Preco,
                     Descricao = i.Descricao,
-                    Disponibilidade = i.Disponibilidade,
+                    Estoque = i.Estoque,
                     Categoria = i.Categoria.Nome,
                     Marca = i.Marca.Nome
                 })
@@ -101,9 +117,10 @@ namespace APItoPFinal.Repository
             return _context.Instrumentos.FirstOrDefault(i => i.Identificação == identificacao);
         }
 
+        // qualquer compra, inclusive cancelada, conta: é o histórico do instrumento
         public bool EstaEmCompra(Guid id)
         {
-            return _context.Compras.Any(c => c.Instrumentos.Any(i => i.Id == id));
+            return _context.CompraItens.Any(ci => ci.InstrumentoId == id);
         }
 
         public void AdicionarInstrumento(Instrumento instrumento)
@@ -112,9 +129,11 @@ namespace APItoPFinal.Repository
             _context.SaveChanges();
         }
 
+        // O instrumento chega rastreado (veio do GetByIdAsync) com os campos já alterados.
+        // Só o SaveChanges basta: assim o EF não reescreve colunas que não mudaram,
+        // e o estoque nunca é sobrescrito por um valor velho.
         public void AtualizarInstrumento(Guid id, Instrumento instrumento)
         {
-            _context.Instrumentos.Update(instrumento);
             _context.SaveChanges();
         }
 

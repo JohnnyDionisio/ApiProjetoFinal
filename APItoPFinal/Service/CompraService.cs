@@ -47,9 +47,14 @@ namespace APItoPFinal.Service
 
         public async Task<Guid> AdicionarCompra(CompraInputDTO input, Guid usuarioId)
         {
-            if (input.InstrumentoIds == null || !input.InstrumentoIds.Any())
+            if (input.Itens == null || !input.Itens.Any())
             {
                 throw new BadRequestException("É necessário informar ao menos um instrumento.");
+            }
+
+            if (input.Itens.Any(i => i.Quantidade < 1))
+            {
+                throw new BadRequestException("A quantidade de cada item deve ser de pelo menos 1.");
             }
 
             var usuario = await _URepository.GetUsuariosById(usuarioId);
@@ -57,6 +62,15 @@ namespace APItoPFinal.Service
             {
                 throw new NotFoundException("Usuário não encontrado.");
             }
+
+            // junta linhas repetidas do mesmo instrumento, somando as quantidades
+            var pedidos = input.Itens
+                .GroupBy(i => i.InstrumentoId)
+                .Select(g => (InstrumentoId: g.Key, Quantidade: g.Sum(x => x.Quantidade)))
+                .ToList();
+
+            var instrumentos = (await _IRepository.GetByIdsAsync(pedidos.Select(p => p.InstrumentoId)))
+                .ToDictionary(i => i.Id);
 
             var compra = new Compra
             {
@@ -66,86 +80,43 @@ namespace APItoPFinal.Service
                 UsuarioId = usuario.Id,
                 DataCompra = DateTime.UtcNow,
                 Status = StatusCompra.Ativa,
-                Instrumentos = new List<Instrumento>()
+                Itens = new List<CompraItem>()
             };
 
-            foreach (var instrumentoId in input.InstrumentoIds.Distinct())
+            foreach (var (instrumentoId, quantidade) in pedidos)
             {
-                var instrumento = await _IRepository.GetByIdAsync(instrumentoId);
-                if (instrumento == null)
+                if (!instrumentos.TryGetValue(instrumentoId, out var instrumento))
                 {
                     throw new NotFoundException($"Instrumento {instrumentoId} não encontrado.");
                 }
-                if (!instrumento.Disponibilidade)
+
+                // checagem amigável, com mensagem clara; quem decide de verdade é o banco, logo abaixo
+                if (instrumento.Estoque < quantidade)
                 {
-                    throw new ConflictException($"O instrumento '{instrumento.Nome}' já foi comprado.");
+                    throw new ConflictException(instrumento.Estoque == 0
+                        ? $"O instrumento '{instrumento.Nome}' está sem estoque."
+                        : $"Estoque insuficiente para '{instrumento.Nome}': restam {instrumento.Estoque}, você pediu {quantidade}.");
                 }
 
-                instrumento.Disponibilidade = false;
-                compra.Instrumentos.Add(instrumento);
+                compra.Itens.Add(new CompraItem
+                {
+                    CompraId = compra.Id,
+                    InstrumentoId = instrumentoId,
+                    Quantidade = quantidade,
+                    PrecoUnitario = instrumento.Preco   // preço da época, gravado no item
+                });
             }
 
-            // grava o valor cobrado na época da compra
-            compra.ValorTotal = compra.Instrumentos.Sum(i => i.Preco);
+            compra.ValorTotal = compra.Itens.Sum(i => i.Quantidade * i.PrecoUnitario);
 
-            await _repository.PostCompras(compra);
+            var semEstoque = await _repository.CriarComBaixaDeEstoqueAsync(compra);
+            if (semEstoque != null)
+            {
+                var nome = instrumentos[semEstoque.Value].Nome;
+                throw new ConflictException($"O instrumento '{nome}' acabou de ficar sem estoque suficiente. Atualize e tente novamente.");
+            }
+
             return compra.Id;
-        }
-
-        public async Task AtualizarCompra(Guid id, CompraInputDTO input)
-        {
-            var compraExiste = await _repository.PuxarCompraEntityById(id);
-            if (compraExiste == null)
-            {
-                throw new NotFoundException("Compra não encontrada.");
-            }
-
-            if (compraExiste.Status != StatusCompra.Ativa)
-            {
-                throw new ConflictException("Só é possível alterar compras ativas.");
-            }
-
-            if (input.InstrumentoIds == null || !input.InstrumentoIds.Any())
-            {
-                throw new BadRequestException("É necessário informar ao menos um instrumento.");
-            }
-
-            // Libera os instrumentos que saíram da lista
-            foreach (var instrumentoAntigo in compraExiste.Instrumentos.ToList())
-            {
-                if (!input.InstrumentoIds.Contains(instrumentoAntigo.Id))
-                {
-                    instrumentoAntigo.Disponibilidade = true;
-                    compraExiste.Instrumentos.Remove(instrumentoAntigo);
-                }
-            }
-
-            // Adiciona os novos instrumentos
-            foreach (var instrumentoId in input.InstrumentoIds)
-            {
-                if (compraExiste.Instrumentos.Any(i => i.Id == instrumentoId))
-                {
-                    continue; // já está na compra, não faz nada
-                }
-
-                var instrumento = await _IRepository.GetByIdAsync(instrumentoId);
-                if (instrumento == null)
-                {
-                    throw new NotFoundException($"Instrumento {instrumentoId} não encontrado.");
-                }
-                if (!instrumento.Disponibilidade)
-                {
-                    throw new ConflictException($"O instrumento '{instrumento.Nome}' já foi comprado.");
-                }
-
-                instrumento.Disponibilidade = false;
-                compraExiste.Instrumentos.Add(instrumento);
-            }
-
-            // correção feita por Admin: o total é recalculado com os preços atuais
-            compraExiste.ValorTotal = compraExiste.Instrumentos.Sum(i => i.Preco);
-
-            await _repository.SaveChangesAsync();
         }
 
         public async Task CancelarCompra(Guid id, Guid usuarioId, bool isAdmin)
@@ -166,15 +137,13 @@ namespace APItoPFinal.Service
                 throw new ConflictException("Esta compra já foi cancelada.");
             }
 
-            foreach (var instrumento in compra.Instrumentos)
+            var itens = compra.Itens.Select(i => (i.InstrumentoId, i.Quantidade)).ToList();
+
+            var cancelada = await _repository.CancelarComEstornoAsync(id, itens);
+            if (!cancelada)
             {
-                instrumento.Disponibilidade = true;
+                throw new ConflictException("Esta compra já foi cancelada.");
             }
-
-            compra.Status = StatusCompra.Cancelada;
-            compra.DataCancelamento = DateTime.UtcNow;
-
-            await _repository.SaveChangesAsync();
         }
 
         public async Task DeletarCompra(Guid id)
@@ -185,17 +154,15 @@ namespace APItoPFinal.Service
                 throw new NotFoundException("Compra não encontrada.");
             }
 
-            // Numa compra cancelada os instrumentos já foram liberados e podem ter
-            // sido comprados de novo: só libera se a compra ainda estava ativa.
+            // compra ativa: devolve o estoque antes de apagar.
+            // numa compra cancelada o estoque já foi devolvido, e não deve ser devolvido de novo.
             if (compra.Status == StatusCompra.Ativa)
             {
-                foreach (var instrumento in compra.Instrumentos)
-                {
-                    instrumento.Disponibilidade = true;
-                }
+                var itens = compra.Itens.Select(i => (i.InstrumentoId, i.Quantidade)).ToList();
+                await _repository.CancelarComEstornoAsync(id, itens);
             }
 
             await _repository.DeleteCompras(id);
         }
     }
-}   
+}

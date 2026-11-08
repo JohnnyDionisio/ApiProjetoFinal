@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using APItoPFinal.DTOs;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace APItoPFinal.Controllers
 {
@@ -25,6 +26,7 @@ namespace APItoPFinal.Controllers
             _repository = repository;
         }
 
+        [EnableRateLimiting("login")]
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDTO dados)
         {

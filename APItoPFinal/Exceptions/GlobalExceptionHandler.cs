@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 
 namespace APItoPFinal.Exceptions
@@ -25,6 +26,9 @@ namespace APItoPFinal.Exceptions
         {
             var (status, title, detail) = exception switch
             {
+                DbUpdateConcurrencyException =>
+                     (StatusCodes.Status409Conflict, "Conflito de concorrência",
+                       "Os dados foram alterados por outra operação ao mesmo tempo. Atualize e tente novamente."),
                 NotFoundException or KeyNotFoundException =>
                     (StatusCodes.Status404NotFound, "Recurso não encontrado", exception.Message),
                 ConflictException =>

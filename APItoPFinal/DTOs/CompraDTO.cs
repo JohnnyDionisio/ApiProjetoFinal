@@ -4,7 +4,7 @@ namespace APItoPFinal.DTOs
 {
     public class CompraDTO
     {
-        public Guid Id { get; set;  }
+        public Guid Id { get; set; }
 
         public string Nome { get; set; }
 
@@ -20,7 +20,6 @@ namespace APItoPFinal.DTOs
 
         public DateTime? DataCancelamento { get; set; }
 
-
-        public List<InstrumentoResumoDTO> Instrumentos { get; set; }
+        public List<CompraItemDTO> Itens { get; set; }
     }
 }

@@ -63,7 +63,7 @@ namespace APItoPFinal.Service
             }
 
             instrumento.Id = Guid.NewGuid();
-            instrumento.Disponibilidade = true;
+            // o estoque inicial vem do corpo da requisição (0 se não for informado)
 
             _repository.AdicionarInstrumento(instrumento);
         }
@@ -85,7 +85,7 @@ namespace APItoPFinal.Service
             instrumentoExiste.Nome = instrumento.Nome;
             instrumentoExiste.Preco = instrumento.Preco;
             instrumentoExiste.Descricao = instrumento.Descricao;
-            instrumentoExiste.Disponibilidade = instrumento.Disponibilidade;
+            // o estoque NÃO é alterado aqui: ele só muda por compra, cancelamento ou ajuste de estoque
 
             _repository.AtualizarInstrumento(instrumento.Id, instrumentoExiste);
         }

@@ -42,7 +42,7 @@ namespace APItoPFinal.Repository
                         Nome = i.Nome,
                         Preco = i.Preco,
                         Descricao = i.Descricao,
-                        Disponibilidade = i.Disponibilidade
+                        Estoque = i.Estoque
                     }).ToList()
                 })
                 .FirstOrDefaultAsync();

@@ -1,7 +1,10 @@
-﻿namespace APItoPFinal.DTOs
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace APItoPFinal.DTOs
 {
     public class CompraInputDTO
     {
-        public List<Guid> InstrumentoIds { get; set; }
+        [MinLength(1, ErrorMessage = "Informe pelo menos 1 item.")]
+        public List<CompraItemInputDTO> Itens { get; set; } = new();
     }
 }

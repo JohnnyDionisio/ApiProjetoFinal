@@ -29,7 +29,6 @@ namespace APItoPFinal.Models
         public Usuario? Usuario { get; set; }
 
         [JsonIgnore]
-        public ICollection<Instrumento> Instrumentos { get; set; } = new List<Instrumento>();
-
+        public ICollection<CompraItem> Itens { get; set; } = new List<CompraItem>();
     }
 }

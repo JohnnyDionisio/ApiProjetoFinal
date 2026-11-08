@@ -53,14 +53,6 @@ namespace APItoPFinal.Controllers
             return Created($"/api/compras/{id}", compraCriada);
         }
 
-        [Authorize(Roles = "Admin")]
-        [HttpPut("{id}")]
-        public async Task<ActionResult> PutCompras(Guid id, CompraInputDTO input)
-        {
-            await _service.AtualizarCompra(id, input);
-            return NoContent();
-        }
-
         [HttpPost("{id}/cancelar")]
         public async Task<IActionResult> CancelarCompra(Guid id)
         {

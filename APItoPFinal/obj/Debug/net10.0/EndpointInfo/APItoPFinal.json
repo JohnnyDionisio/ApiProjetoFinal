@@ -384,52 +384,6 @@
           }
         ]
       },
-      "put": {
-        "tags": [
-          "Compras"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CompraInputDTO"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CompraInputDTO"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/CompraInputDTO"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "Bearer": [ ]
-          }
-        ]
-      },
       "delete": {
         "tags": [
           "Compras"
@@ -1528,10 +1482,10 @@
             ],
             "format": "date-time"
           },
-          "instrumentos": {
+          "itens": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/InstrumentoResumoDTO"
+              "$ref": "#/components/schemas/CompraItemDTO"
             }
           }
         }
@@ -1539,12 +1493,70 @@
       "CompraInputDTO": {
         "type": "object",
         "properties": {
-          "instrumentoIds": {
+          "itens": {
+            "minItems": 1,
             "type": "array",
             "items": {
-              "type": "string",
-              "format": "uuid"
+              "$ref": "#/components/schemas/CompraItemInputDTO"
             }
+          }
+        }
+      },
+      "CompraItemDTO": {
+        "type": "object",
+        "properties": {
+          "instrumentoId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "identificação": {
+            "type": "string"
+          },
+          "nome": {
+            "type": "string"
+          },
+          "quantidade": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "precoUnitario": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "subTotal": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          }
+        }
+      },
+      "CompraItemInputDTO": {
+        "type": "object",
+        "properties": {
+          "instrumentoId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "quantidade": {
+            "maximum": 1000,
+            "minimum": 1,
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
           }
         }
       },
@@ -1584,8 +1596,15 @@
             "minLength": 0,
             "type": "string"
           },
-          "disponibilidade": {
-            "type": "boolean"
+          "estoque": {
+            "maximum": 1000000,
+            "minimum": 0,
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
           },
           "idCategoria": {
             "type": "string",
@@ -1614,15 +1633,6 @@
                 "$ref": "#/components/schemas/Marca"
               }
             ]
-          },
-          "compras": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "$ref": "#/components/schemas/Compra"
-            }
           }
         }
       },
@@ -1649,6 +1659,14 @@
           },
           "descricao": {
             "type": "string"
+          },
+          "estoque": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
           },
           "disponibilidade": {
             "type": "boolean"
@@ -1684,6 +1702,14 @@
           },
           "descricao": {
             "type": "string"
+          },
+          "estoque": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
           },
           "disponibilidade": {
             "type": "boolean"

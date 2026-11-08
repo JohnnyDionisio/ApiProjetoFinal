@@ -188,27 +188,6 @@
   },
   {
     "ContainingType": "APItoPFinal.Controllers.ComprasController",
-    "Method": "PutCompras",
-    "RelativePath": "api/Compras/{id}",
-    "HttpMethod": "PUT",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Guid",
-        "IsRequired": true
-      },
-      {
-        "Name": "input",
-        "Type": "APItoPFinal.DTOs.CompraInputDTO",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "APItoPFinal.Controllers.ComprasController",
     "Method": "DeleteCompras",
     "RelativePath": "api/Compras/{id}",
     "HttpMethod": "DELETE",
