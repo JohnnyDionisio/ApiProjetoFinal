@@ -1134,7 +1134,7 @@
           "buildTransitive/net6.0/_._": {}
         }
       },
-      "System.Security.Cryptography.Pkcs/9.0.11": {
+      "System.Security.Cryptography.Pkcs/9.0.23": {
         "type": "package",
         "compile": {
           "lib/net9.0/System.Security.Cryptography.Pkcs.dll": {
@@ -3312,10 +3312,10 @@
         "useSharedDesignerContext.txt"
       ]
     },
-    "System.Security.Cryptography.Pkcs/9.0.11": {
-      "sha512": "YS2YqtN6fFjlTDIQI+ucjbbrEvwMn796r+VLTQRr/5Oy6g+i+m7nIou83KnJCnAcKna2I+5eVJRks6SoHSpetQ==",
+    "System.Security.Cryptography.Pkcs/9.0.23": {
+      "sha512": "vy2OL0rGdetAaY1437d0VFrdc2yau4i5ZtUmnq5bO5QYfwbtrr2toTtL9UKIKhOI4FNWyTQHchvAUcemFSDeVg==",
       "type": "package",
-      "path": "system.security.cryptography.pkcs/9.0.11",
+      "path": "system.security.cryptography.pkcs/9.0.23",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -3340,7 +3340,7 @@
         "runtimes/win/lib/net8.0/System.Security.Cryptography.Pkcs.xml",
         "runtimes/win/lib/net9.0/System.Security.Cryptography.Pkcs.dll",
         "runtimes/win/lib/net9.0/System.Security.Cryptography.Pkcs.xml",
-        "system.security.cryptography.pkcs.9.0.11.nupkg.sha512",
+        "system.security.cryptography.pkcs.9.0.23.nupkg.sha512",
         "system.security.cryptography.pkcs.nuspec",
         "useSharedDesignerContext.txt"
       ]
@@ -3389,27 +3389,28 @@
       "Microsoft.EntityFrameworkCore.SqlServer >= 10.0.11",
       "Microsoft.EntityFrameworkCore.Tools >= 10.0.11",
       "Microsoft.OpenApi >= 2.7.5",
-      "Scalar.AspNetCore >= 2.19.0"
+      "Scalar.AspNetCore >= 2.19.0",
+      "System.Security.Cryptography.Pkcs >= 9.0.23"
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Usuario\\.nuget\\packages\\": {},
+    "C:\\Users\\53362182860\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Usuario\\Desktop\\Programações\\APIF\\ApiProjetoFinal\\APItoPFinal\\APItoPFinal.csproj",
+      "projectUniqueName": "C:\\Users\\53362182860\\Desktop\\Programações\\C#\\APItoPFinal\\APItoPFinal\\APItoPFinal.csproj",
       "projectName": "APItoPFinal",
-      "projectPath": "C:\\Users\\Usuario\\Desktop\\Programações\\APIF\\ApiProjetoFinal\\APItoPFinal\\APItoPFinal.csproj",
-      "packagesPath": "C:\\Users\\Usuario\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Usuario\\Desktop\\Programações\\APIF\\ApiProjetoFinal\\APItoPFinal\\obj\\",
+      "projectPath": "C:\\Users\\53362182860\\Desktop\\Programações\\C#\\APItoPFinal\\APItoPFinal\\APItoPFinal.csproj",
+      "packagesPath": "C:\\Users\\53362182860\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\53362182860\\Desktop\\Programações\\C#\\APItoPFinal\\APItoPFinal\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\Usuario\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\53362182860\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -3479,6 +3480,10 @@
           "Scalar.AspNetCore": {
             "target": "Package",
             "version": "[2.19.0, )"
+          },
+          "System.Security.Cryptography.Pkcs": {
+            "target": "Package",
+            "version": "[9.0.23, )"
           }
         },
         "imports": [
@@ -3500,7 +3505,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.401/PortableRuntimeIdentifierGraph.json",
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.400/PortableRuntimeIdentifierGraph.json",
         "packagesToPrune": {
           "Microsoft.AspNetCore": "(,10.0.32767]",
           "Microsoft.AspNetCore.Antiforgery": "(,10.0.32767]",
@@ -3917,27 +3922,5 @@
         }
       }
     }
-  },
-  "logs": [
-    {
-      "code": "NU1902",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "O pacote 'System.Security.Cryptography.Pkcs' 9.0.11 tem uma moderado vulnerabilidade de gravidade conhecida, https://github.com/advisories/GHSA-2fmv-rv2c-59x7",
-      "libraryId": "System.Security.Cryptography.Pkcs",
-      "targetGraphs": [
-        "net10.0"
-      ]
-    },
-    {
-      "code": "NU1903",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "O pacote 'System.Security.Cryptography.Pkcs' 9.0.11 tem uma alta vulnerabilidade de gravidade conhecida, https://github.com/advisories/GHSA-846f-f764-76mx",
-      "libraryId": "System.Security.Cryptography.Pkcs",
-      "targetGraphs": [
-        "net10.0"
-      ]
-    }
-  ]
+  }
 }

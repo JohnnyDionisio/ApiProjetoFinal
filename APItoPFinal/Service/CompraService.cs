@@ -109,7 +109,7 @@ namespace APItoPFinal.Service
 
             compra.ValorTotal = compra.Itens.Sum(i => i.Quantidade * i.PrecoUnitario);
 
-            var semEstoque = await _repository.CriarComBaixaDeEstoqueAsync(compra);
+            var semEstoque = await _repository.CriarComBaixaDeEstoqueAsync(compra, usuarioId);
             if (semEstoque != null)
             {
                 var nome = instrumentos[semEstoque.Value].Nome;
@@ -139,14 +139,14 @@ namespace APItoPFinal.Service
 
             var itens = compra.Itens.Select(i => (i.InstrumentoId, i.Quantidade)).ToList();
 
-            var cancelada = await _repository.CancelarComEstornoAsync(id, itens);
+            var cancelada = await _repository.CancelarComEstornoAsync(id, itens, usuarioId, "Cancelamento de compra");
             if (!cancelada)
             {
                 throw new ConflictException("Esta compra já foi cancelada.");
             }
         }
 
-        public async Task DeletarCompra(Guid id)
+        public async Task DeletarCompra(Guid id, Guid usuarioId)
         {
             var compra = await _repository.PuxarCompraEntityById(id);
             if (compra == null)
@@ -159,7 +159,7 @@ namespace APItoPFinal.Service
             if (compra.Status == StatusCompra.Ativa)
             {
                 var itens = compra.Itens.Select(i => (i.InstrumentoId, i.Quantidade)).ToList();
-                await _repository.CancelarComEstornoAsync(id, itens);
+                await _repository.CancelarComEstornoAsync(id, itens, usuarioId, "Exclusão da compra pelo administrador");
             }
 
             await _repository.DeleteCompras(id);

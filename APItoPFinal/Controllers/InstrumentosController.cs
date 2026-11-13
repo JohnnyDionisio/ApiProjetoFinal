@@ -1,4 +1,5 @@
-﻿using APItoPFinal.DTOs;
+﻿using System.Security.Claims;
+using APItoPFinal.DTOs;
 using APItoPFinal.Exceptions;
 using APItoPFinal.Models;
 using APItoPFinal.Service;
@@ -17,6 +18,11 @@ namespace APItoPFinal.Controllers
         public InstrumentosController(InstrumentoService service)
         {
             _service = service;
+        }
+
+        private Guid GetUsuarioLogadoId()
+        {
+            return Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         }
 
         [HttpGet]
@@ -41,7 +47,7 @@ namespace APItoPFinal.Controllers
         public async Task<ActionResult<Instrumento>> PostInstrumento(Instrumento instrumento)
         {
             instrumento.Id = Guid.NewGuid();
-            await _service.AdicionarInstrumento(instrumento);
+            await _service.AdicionarInstrumento(instrumento, GetUsuarioLogadoId());
             return CreatedAtAction("GetInstrumentosById", new { id = instrumento.Id }, instrumento);
         }
 
@@ -64,6 +70,21 @@ namespace APItoPFinal.Controllers
         {
             await _service.DeletarInstrumento(id);
             return NoContent();
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost("{id}/estoque")]
+        public async Task<ActionResult<MovimentoEstoqueDTO>> AjustarEstoque(Guid id, AjusteEstoqueDTO dto)
+        {
+            var movimento = await _service.AjustarEstoque(id, dto, GetUsuarioLogadoId());
+            return Ok(movimento);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet("{id}/estoque/movimentos")]
+        public async Task<ActionResult<PaginadoDTO<MovimentoEstoqueDTO>>> GetMovimentos(Guid id, [FromQuery] MovimentoFiltroDTO filtro)
+        {
+            return await _service.GetMovimentos(id, filtro);
         }
     }
 }

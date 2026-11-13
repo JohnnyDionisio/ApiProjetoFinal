@@ -64,7 +64,7 @@ namespace APItoPFinal.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteCompras(Guid id)
         {
-            await _service.DeletarCompra(id);
+            await _service.DeletarCompra(id, GetUsuarioLogadoId());
             return NoContent();
         }
     }

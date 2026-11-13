@@ -49,7 +49,7 @@ namespace APItoPFinal.Service
             return await _repository.GetByIdAsync(id);
         }
 
-        public async Task AdicionarInstrumento(Instrumento instrumento)
+        public async Task AdicionarInstrumento(Instrumento instrumento, Guid usuarioId)
         {
             var instrumentoExiste = await _repository.GetByIdAsync(instrumento.Id);
             if (instrumentoExiste != null)
@@ -65,7 +65,7 @@ namespace APItoPFinal.Service
             instrumento.Id = Guid.NewGuid();
             // o estoque inicial vem do corpo da requisição (0 se não for informado)
 
-            _repository.AdicionarInstrumento(instrumento);
+            _repository.AdicionarInstrumento(instrumento, usuarioId);
         }
 
         public async Task AtualizarInstrumento(Instrumento instrumento)
@@ -110,5 +110,72 @@ namespace APItoPFinal.Service
                 throw new ConflictException("Não é possível excluir: este instrumento está em uso");
             }
         }
+
+        // ---------------- estoque ----------------
+
+        public async Task<MovimentoEstoqueDTO> AjustarEstoque(Guid instrumentoId, AjusteEstoqueDTO dto, Guid usuarioId)
+        {
+            if (dto.Tipo is not (TipoMovimentoEstoque.Entrada or TipoMovimentoEstoque.Ajuste))
+            {
+                throw new BadRequestException("Tipo inválido. Use 'Entrada' ou 'Ajuste'.");
+            }
+
+            if (dto.Tipo == TipoMovimentoEstoque.Entrada && dto.Quantidade <= 0)
+            {
+                throw new BadRequestException("Uma entrada deve ter quantidade maior que zero.");
+            }
+
+            if (dto.Tipo == TipoMovimentoEstoque.Ajuste && dto.Quantidade == 0)
+            {
+                throw new BadRequestException("Um ajuste não pode ter quantidade zero.");
+            }
+
+            if (!await _repository.ExisteAsync(instrumentoId))
+            {
+                throw new NotFoundException("Instrumento não encontrado.");
+            }
+
+            var movimento = await _repository.AjustarEstoqueAsync(
+                instrumentoId, dto.Tipo.Value, dto.Quantidade, dto.Motivo.Trim(), usuarioId);
+
+            if (movimento == null)
+            {
+                throw new ConflictException("Essa variação deixaria o estoque negativo.");
+            }
+
+            return ToDTO(movimento);
+        }
+
+        public async Task<PaginadoDTO<MovimentoEstoqueDTO>> GetMovimentos(Guid instrumentoId, MovimentoFiltroDTO filtro)
+        {
+            if (!await _repository.ExisteAsync(instrumentoId))
+            {
+                throw new NotFoundException("Instrumento não encontrado.");
+            }
+
+            var (itens, total) = await _repository.BuscarMovimentosAsync(instrumentoId, filtro);
+
+            return new PaginadoDTO<MovimentoEstoqueDTO>
+            {
+                Itens = itens,
+                Pagina = filtro.Pagina,
+                Tamanho = filtro.Tamanho,
+                TotalItens = total,
+                TotalPaginas = (int)Math.Ceiling(total / (double)filtro.Tamanho)
+            };
+        }
+
+        private static MovimentoEstoqueDTO ToDTO(MovimentoEstoque m) => new MovimentoEstoqueDTO
+        {
+            Id = m.Id,
+            InstrumentoId = m.InstrumentoId,
+            Tipo = m.Tipo,
+            Variacao = m.Variacao,
+            EstoqueApos = m.EstoqueApos,
+            Motivo = m.Motivo,
+            CompraId = m.CompraId,
+            UsuarioId = m.UsuarioId,
+            DataHora = m.DataHora
+        };
     }
 }

@@ -20,6 +20,8 @@ namespace APItoPFinal.Data
 
         public DbSet<CompraItem> CompraItens { get; set; }
 
+        public DbSet<MovimentoEstoque> MovimentosEstoque { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -77,6 +79,26 @@ namespace APItoPFinal.Data
                     .OnDelete(DeleteBehavior.Restrict);
 
                 e.ToTable(t => t.HasCheckConstraint("CK_CompraItens_Quantidade", "[Quantidade] > 0"));
+            });
+
+            modelBuilder.Entity<MovimentoEstoque>(e =>
+            {
+                e.Property(m => m.Motivo).HasMaxLength(200);
+
+                // apagar um instrumento que nunca foi vendido apaga o histórico dele
+                e.HasOne<Instrumento>().WithMany().HasForeignKey(m => m.InstrumentoId).OnDelete(DeleteBehavior.Cascade);
+
+                // apagar a compra ou o usuário preserva o movimento, só perde o vínculo
+                e.HasOne<Compra>().WithMany().HasForeignKey(m => m.CompraId).OnDelete(DeleteBehavior.SetNull);
+                e.HasOne<Usuario>().WithMany().HasForeignKey(m => m.UsuarioId).OnDelete(DeleteBehavior.SetNull);
+
+                e.HasIndex(m => new { m.InstrumentoId, m.DataHora });
+
+                e.ToTable(t =>
+                {
+                    t.HasCheckConstraint("CK_MovimentosEstoque_Variacao", "[Variacao] <> 0");
+                    t.HasCheckConstraint("CK_MovimentosEstoque_EstoqueApos", "[EstoqueApos] >= 0");
+                });
             });
         }
     }

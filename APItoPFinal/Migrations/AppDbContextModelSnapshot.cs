@@ -173,6 +173,53 @@ namespace APItoPFinal.Migrations
                     b.ToTable("Marcas");
                 });
 
+            modelBuilder.Entity("APItoPFinal.Models.MovimentoEstoque", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("CompraId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("DataHora")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("EstoqueApos")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("InstrumentoId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Motivo")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("Tipo")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("UsuarioId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Variacao")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompraId");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.HasIndex("InstrumentoId", "DataHora");
+
+                    b.ToTable("MovimentosEstoque", t =>
+                        {
+                            t.HasCheckConstraint("CK_MovimentosEstoque_EstoqueApos", "[EstoqueApos] >= 0");
+
+                            t.HasCheckConstraint("CK_MovimentosEstoque_Variacao", "[Variacao] <> 0");
+                        });
+                });
+
             modelBuilder.Entity("APItoPFinal.Models.Usuario", b =>
                 {
                     b.Property<Guid>("Id")
@@ -269,6 +316,25 @@ namespace APItoPFinal.Migrations
                     b.Navigation("Categoria");
 
                     b.Navigation("Marca");
+                });
+
+            modelBuilder.Entity("APItoPFinal.Models.MovimentoEstoque", b =>
+                {
+                    b.HasOne("APItoPFinal.Models.Compra", null)
+                        .WithMany()
+                        .HasForeignKey("CompraId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("APItoPFinal.Models.Instrumento", null)
+                        .WithMany()
+                        .HasForeignKey("InstrumentoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("APItoPFinal.Models.Usuario", null)
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.SetNull);
                 });
 
             modelBuilder.Entity("APItoPFinal.Models.Categoria", b =>

@@ -379,6 +379,78 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "APItoPFinal.Controllers.InstrumentosController",
+    "Method": "AjustarEstoque",
+    "RelativePath": "api/Instrumentos/{id}/estoque",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "APItoPFinal.DTOs.AjusteEstoqueDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "APItoPFinal.DTOs.MovimentoEstoqueDTO",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "APItoPFinal.Controllers.InstrumentosController",
+    "Method": "GetMovimentos",
+    "RelativePath": "api/Instrumentos/{id}/estoque/movimentos",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      },
+      {
+        "Name": "Tipo",
+        "Type": "System.Nullable\u00601[[APItoPFinal.Models.TipoMovimentoEstoque, APItoPFinal, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "Pagina",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "Tamanho",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "APItoPFinal.DTOs.PaginadoDTO\u00601[[APItoPFinal.DTOs.MovimentoEstoqueDTO, APItoPFinal, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
     "ContainingType": "APItoPFinal.Controllers.MarcasController",
     "Method": "GetMarcas",
     "RelativePath": "api/Marcas",

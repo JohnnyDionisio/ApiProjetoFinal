@@ -51,11 +51,14 @@ namespace APItoPFinal.Repository
                 .FirstOrDefaultAsync();
         }
 
-        // Cria a compra e dá baixa no estoque, tudo ou nada.
+        // Cria a compra, dá baixa no estoque e registra os movimentos, tudo ou nada.
         // Devolve null se deu certo, ou o Id do instrumento que não tinha estoque suficiente.
-        public async Task<Guid?> CriarComBaixaDeEstoqueAsync(Compra compra)
+        public async Task<Guid?> CriarComBaixaDeEstoqueAsync(Compra compra, Guid usuarioId)
         {
             await using var transacao = await _context.Database.BeginTransactionAsync();
+
+            var agora = DateTime.UtcNow;
+            var movimentos = new List<MovimentoEstoque>();
 
             // ordem fixa por Id: duas compras simultâneas nunca travam uma à outra esperando em ordens opostas
             foreach (var item in compra.Itens.OrderBy(i => i.InstrumentoId))
@@ -73,18 +76,39 @@ namespace APItoPFinal.Repository
                     await transacao.RollbackAsync();
                     return instrumentoId;
                 }
+
+                var estoqueApos = await _context.Instrumentos
+                    .AsNoTracking()
+                    .Where(i => i.Id == instrumentoId)
+                    .Select(i => i.Estoque)
+                    .FirstAsync();
+
+                movimentos.Add(new MovimentoEstoque
+                {
+                    Id = Guid.NewGuid(),
+                    InstrumentoId = instrumentoId,
+                    Tipo = TipoMovimentoEstoque.Saida,
+                    Variacao = -quantidade,
+                    EstoqueApos = estoqueApos,
+                    Motivo = "Compra",
+                    CompraId = compra.Id,
+                    UsuarioId = usuarioId,
+                    DataHora = agora
+                });
             }
 
             _context.Compras.Add(compra);
+            _context.MovimentosEstoque.AddRange(movimentos);
             await _context.SaveChangesAsync();
 
             await transacao.CommitAsync();
             return null;
         }
 
-        // Cancela e devolve o estoque, tudo ou nada.
+        // Cancela, devolve o estoque e registra os estornos, tudo ou nada.
         // Devolve false se a compra já não estava ativa (por exemplo, dois cancelamentos ao mesmo tempo).
-        public async Task<bool> CancelarComEstornoAsync(Guid compraId, IEnumerable<(Guid InstrumentoId, int Quantidade)> itens)
+        public async Task<bool> CancelarComEstornoAsync(
+            Guid compraId, IEnumerable<(Guid InstrumentoId, int Quantidade)> itens, Guid usuarioId, string motivo)
         {
             await using var transacao = await _context.Database.BeginTransactionAsync();
 
@@ -108,7 +132,28 @@ namespace APItoPFinal.Repository
                 await _context.Instrumentos
                     .Where(i => i.Id == instrumentoId)
                     .ExecuteUpdateAsync(s => s.SetProperty(i => i.Estoque, i => i.Estoque + quantidade));
+
+                var estoqueApos = await _context.Instrumentos
+                    .AsNoTracking()
+                    .Where(i => i.Id == instrumentoId)
+                    .Select(i => i.Estoque)
+                    .FirstAsync();
+
+                _context.MovimentosEstoque.Add(new MovimentoEstoque
+                {
+                    Id = Guid.NewGuid(),
+                    InstrumentoId = instrumentoId,
+                    Tipo = TipoMovimentoEstoque.Estorno,
+                    Variacao = quantidade,
+                    EstoqueApos = estoqueApos,
+                    Motivo = motivo,
+                    CompraId = compraId,
+                    UsuarioId = usuarioId,
+                    DataHora = agora
+                });
             }
+
+            await _context.SaveChangesAsync();
 
             await transacao.CommitAsync();
             return true;

@@ -123,10 +123,109 @@ namespace APItoPFinal.Repository
             return _context.CompraItens.Any(ci => ci.InstrumentoId == id);
         }
 
-        public void AdicionarInstrumento(Instrumento instrumento)
+        public void AdicionarInstrumento(Instrumento instrumento, Guid usuarioId)
         {
             _context.Instrumentos.Add(instrumento);
+
+            // estoque informado no cadastro: registra como saldo inicial (mesmo SaveChanges, então tudo ou nada)
+            if (instrumento.Estoque > 0)
+            {
+                _context.MovimentosEstoque.Add(new MovimentoEstoque
+                {
+                    Id = Guid.NewGuid(),
+                    InstrumentoId = instrumento.Id,
+                    Tipo = TipoMovimentoEstoque.SaldoInicial,
+                    Variacao = instrumento.Estoque,
+                    EstoqueApos = instrumento.Estoque,
+                    Motivo = "Estoque inicial do cadastro",
+                    UsuarioId = usuarioId,
+                    DataHora = DateTime.UtcNow
+                });
+            }
+
             _context.SaveChanges();
+        }
+        public async Task<bool> ExisteAsync(Guid id)
+        {
+            return await _context.Instrumentos.AnyAsync(i => i.Id == id);
+        }
+
+        // Aplica a variação e registra o movimento, tudo ou nada.
+        // Devolve null se a variação deixaria o estoque negativo.
+        public async Task<MovimentoEstoque?> AjustarEstoqueAsync(
+            Guid instrumentoId, TipoMovimentoEstoque tipo, int variacao, string motivo, Guid usuarioId)
+        {
+            await using var transacao = await _context.Database.BeginTransactionAsync();
+
+            // o próprio banco decide: só aplica se o resultado não for negativo
+            var linhas = await _context.Instrumentos
+                .Where(i => i.Id == instrumentoId && i.Estoque + variacao >= 0)
+                .ExecuteUpdateAsync(s => s.SetProperty(i => i.Estoque, i => i.Estoque + variacao));
+
+            if (linhas == 0)
+            {
+                await transacao.RollbackAsync();
+                return null;
+            }
+
+            var estoqueApos = await _context.Instrumentos
+                .AsNoTracking()
+                .Where(i => i.Id == instrumentoId)
+                .Select(i => i.Estoque)
+                .FirstAsync();
+
+            var movimento = new MovimentoEstoque
+            {
+                Id = Guid.NewGuid(),
+                InstrumentoId = instrumentoId,
+                Tipo = tipo,
+                Variacao = variacao,
+                EstoqueApos = estoqueApos,
+                Motivo = motivo,
+                UsuarioId = usuarioId,
+                DataHora = DateTime.UtcNow
+            };
+
+            _context.MovimentosEstoque.Add(movimento);
+            await _context.SaveChangesAsync();
+
+            await transacao.CommitAsync();
+            return movimento;
+        }
+
+        public async Task<(List<MovimentoEstoqueDTO> Itens, int Total)> BuscarMovimentosAsync(Guid instrumentoId, MovimentoFiltroDTO f)
+        {
+            var query = _context.MovimentosEstoque
+                .AsNoTracking()
+                .Where(m => m.InstrumentoId == instrumentoId);
+
+            if (f.Tipo.HasValue)
+            {
+                query = query.Where(m => m.Tipo == f.Tipo.Value);
+            }
+
+            var total = await query.CountAsync();
+
+            var itens = await query
+                .OrderByDescending(m => m.DataHora)
+                .ThenByDescending(m => m.Id)
+                .Skip((f.Pagina - 1) * f.Tamanho)
+                .Take(f.Tamanho)
+                .Select(m => new MovimentoEstoqueDTO
+                {
+                    Id = m.Id,
+                    InstrumentoId = m.InstrumentoId,
+                    Tipo = m.Tipo,
+                    Variacao = m.Variacao,
+                    EstoqueApos = m.EstoqueApos,
+                    Motivo = m.Motivo,
+                    CompraId = m.CompraId,
+                    UsuarioId = m.UsuarioId,
+                    DataHora = m.DataHora
+                })
+                .ToListAsync();
+
+            return (itens, total);
         }
 
         // O instrumento chega rastreado (veio do GetByIdAsync) com os campos já alterados.
