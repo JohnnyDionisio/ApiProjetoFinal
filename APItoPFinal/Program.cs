@@ -49,6 +49,9 @@ builder.Services.AddScoped<MarcaService>();
 builder.Services.AddScoped<UsuariosRepository>();
 builder.Services.AddScoped<UsuariosService>();
 
+builder.Services.AddScoped<CarrinhoRepository>();
+builder.Services.AddScoped<CarrinhoService>();
+
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 

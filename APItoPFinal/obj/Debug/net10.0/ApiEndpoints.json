@@ -16,6 +16,129 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "APItoPFinal.Controllers.CarrinhoController",
+    "Method": "GetCarrinho",
+    "RelativePath": "api/Carrinho",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "APItoPFinal.DTOs.CarrinhoDTO",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "APItoPFinal.Controllers.CarrinhoController",
+    "Method": "Esvaziar",
+    "RelativePath": "api/Carrinho",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "APItoPFinal.Controllers.CarrinhoController",
+    "Method": "Finalizar",
+    "RelativePath": "api/Carrinho/finalizar",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "APItoPFinal.DTOs.CompraDTO",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "APItoPFinal.Controllers.CarrinhoController",
+    "Method": "AdicionarItem",
+    "RelativePath": "api/Carrinho/itens",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "APItoPFinal.DTOs.CarrinhoItemInputDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "APItoPFinal.DTOs.CarrinhoDTO",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "APItoPFinal.Controllers.CarrinhoController",
+    "Method": "AlterarQuantidade",
+    "RelativePath": "api/Carrinho/itens/{instrumentoId}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "instrumentoId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "APItoPFinal.DTOs.CarrinhoQuantidadeDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "APItoPFinal.DTOs.CarrinhoDTO",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "APItoPFinal.Controllers.CarrinhoController",
+    "Method": "RemoverItem",
+    "RelativePath": "api/Carrinho/itens/{instrumentoId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "instrumentoId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "APItoPFinal.Controllers.CategoriasController",
     "Method": "GetCategorias",
     "RelativePath": "api/Categorias",

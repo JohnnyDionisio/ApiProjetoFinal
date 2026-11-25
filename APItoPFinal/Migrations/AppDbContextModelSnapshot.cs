@@ -22,6 +22,30 @@ namespace APItoPFinal.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("APItoPFinal.Models.CarrinhoItem", b =>
+                {
+                    b.Property<Guid>("UsuarioId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("InstrumentoId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("DataAdicao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Quantidade")
+                        .HasColumnType("int");
+
+                    b.HasKey("UsuarioId", "InstrumentoId");
+
+                    b.HasIndex("InstrumentoId");
+
+                    b.ToTable("CarrinhoItens", t =>
+                        {
+                            t.HasCheckConstraint("CK_CarrinhoItens_Quantidade", "[Quantidade] > 0");
+                        });
+                });
+
             modelBuilder.Entity("APItoPFinal.Models.Categoria", b =>
                 {
                     b.Property<Guid>("Id")
@@ -267,6 +291,25 @@ namespace APItoPFinal.Migrations
                         .IsUnique();
 
                     b.ToTable("Usuarios");
+                });
+
+            modelBuilder.Entity("APItoPFinal.Models.CarrinhoItem", b =>
+                {
+                    b.HasOne("APItoPFinal.Models.Instrumento", "Instrumento")
+                        .WithMany()
+                        .HasForeignKey("InstrumentoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("APItoPFinal.Models.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Instrumento");
+
+                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("APItoPFinal.Models.Compra", b =>

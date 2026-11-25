@@ -22,6 +22,8 @@ namespace APItoPFinal.Data
 
         public DbSet<MovimentoEstoque> MovimentosEstoque { get; set; }
 
+        public DbSet<CarrinhoItem> CarrinhoItens { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -99,6 +101,20 @@ namespace APItoPFinal.Data
                     t.HasCheckConstraint("CK_MovimentosEstoque_Variacao", "[Variacao] <> 0");
                     t.HasCheckConstraint("CK_MovimentosEstoque_EstoqueApos", "[EstoqueApos] >= 0");
                 });
+            });
+
+            modelBuilder.Entity<CarrinhoItem>(e =>
+            {
+                // um instrumento aparece uma vez por carrinho, com a quantidade
+                e.HasKey(c => new { c.UsuarioId, c.InstrumentoId });
+
+                // apagar o usuário esvazia o carrinho dele
+                e.HasOne(c => c.Usuario).WithMany().HasForeignKey(c => c.UsuarioId).OnDelete(DeleteBehavior.Cascade);
+
+                // apagar um instrumento (só é possível se nunca foi vendido) tira ele dos carrinhos
+                e.HasOne(c => c.Instrumento).WithMany().HasForeignKey(c => c.InstrumentoId).OnDelete(DeleteBehavior.Cascade);
+
+                e.ToTable(t => t.HasCheckConstraint("CK_CarrinhoItens_Quantidade", "[Quantidade] > 0"));
             });
         }
     }

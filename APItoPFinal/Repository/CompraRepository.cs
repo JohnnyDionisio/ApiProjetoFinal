@@ -2,6 +2,7 @@
 using APItoPFinal.DTOs;
 using APItoPFinal.Models;
 using Microsoft.EntityFrameworkCore;
+using APItoPFinal.Exceptions;
 
 namespace APItoPFinal.Repository
 {
@@ -53,9 +54,25 @@ namespace APItoPFinal.Repository
 
         // Cria a compra, dá baixa no estoque e registra os movimentos, tudo ou nada.
         // Devolve null se deu certo, ou o Id do instrumento que não tinha estoque suficiente.
-        public async Task<Guid?> CriarComBaixaDeEstoqueAsync(Compra compra, Guid usuarioId)
+        public async Task<Guid?> CriarComBaixaDeEstoqueAsync(Compra compra, Guid usuarioId, List<Guid>? consumirDoCarrinho = null)
         {
             await using var transacao = await _context.Database.BeginTransactionAsync();
+
+            // finalizar carrinho: esvazia os itens dentro desta mesma transação e confere a contagem.
+            // Se uma segunda requisição chegar junto, ela espera a primeira terminar, encontra 0 itens e é recusada:
+            // é isso que impede o clique duplo de comprar duas vezes.
+            if (consumirDoCarrinho != null)
+            {
+                var removidos = await _context.CarrinhoItens
+                    .Where(c => c.UsuarioId == usuarioId && consumirDoCarrinho.Contains(c.InstrumentoId))
+                    .ExecuteDeleteAsync();
+
+                if (removidos != consumirDoCarrinho.Count)
+                {
+                    await transacao.RollbackAsync();
+                    throw new ConflictException("O carrinho foi alterado ou já foi finalizado. Confira o carrinho e tente novamente.");
+                }
+            }
 
             var agora = DateTime.UtcNow;
             var movimentos = new List<MovimentoEstoque>();

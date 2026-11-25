@@ -45,7 +45,7 @@ namespace APItoPFinal.Service
             return compra;
         }
 
-        public async Task<Guid> AdicionarCompra(CompraInputDTO input, Guid usuarioId)
+        public async Task<Guid> AdicionarCompra(CompraInputDTO input, Guid usuarioId, bool consumirCarrinho = false)
         {
             if (input.Itens == null || !input.Itens.Any())
             {
@@ -109,7 +109,8 @@ namespace APItoPFinal.Service
 
             compra.ValorTotal = compra.Itens.Sum(i => i.Quantidade * i.PrecoUnitario);
 
-            var semEstoque = await _repository.CriarComBaixaDeEstoqueAsync(compra, usuarioId);
+            var idsDoCarrinho = consumirCarrinho ? compra.Itens.Select(i => i.InstrumentoId).ToList() : null;
+            var semEstoque = await _repository.CriarComBaixaDeEstoqueAsync(compra, usuarioId, idsDoCarrinho);
             if (semEstoque != null)
             {
                 var nome = instrumentos[semEstoque.Value].Nome;
